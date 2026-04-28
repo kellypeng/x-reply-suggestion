@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Chrome extension packaging
+*.zip
+*.crx
+*.pem
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env / secrets (defensive — this project doesn't use env files,
+# but blocks accidental commits if one is ever added)
+.env
+.env.*
+*.key
+secrets.json
+
+# Node modules (defensive — not currently used)
+node_modules/

@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Twitter Reply Helper",
+  "version": "0.2.0",
+  "description": "Generate reply ideas for tweets using your favorite LLM provider.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://x.com/*",
+    "https://twitter.com/*",
+    "https://api.anthropic.com/*",
+    "https://api.openai.com/*",
+    "https://api.moonshot.cn/*",
+    "https://open.bigmodel.cn/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://x.com/*", "https://twitter.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Twitter Reply Helper"
+  }
+}
