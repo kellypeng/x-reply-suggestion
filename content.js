@@ -34,14 +34,41 @@
           <button class="trh-btn-close" type="button" aria-label="Close">×</button>
         </div>
       </div>
+      <div class="trh-intent">
+        <textarea
+          class="trh-intent-input"
+          rows="2"
+          placeholder="想表达什么？(可选, 中英文都行, 回车提交)"
+        ></textarea>
+      </div>
       <div class="trh-body"></div>
     `;
     document.body.appendChild(panel);
     panel.querySelector(".trh-btn-close").addEventListener("click", hidePanel);
     panel.querySelector(".trh-btn-regen").addEventListener("click", () => {
-      if (activeComposer && lastTweetText) requestReplies(lastTweetText);
+      if (activeComposer && lastTweetText) requestReplies(lastTweetText, getIntent());
+    });
+    const intentEl = panel.querySelector(".trh-intent-input");
+    intentEl.addEventListener("keydown", (e) => {
+      // Enter submits, Shift+Enter inserts newline
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (activeComposer && lastTweetText) {
+          requestReplies(lastTweetText, intentEl.value.trim());
+        }
+      }
     });
     return panel;
+  }
+
+  function getIntent() {
+    const el = panel?.querySelector(".trh-intent-input");
+    return el ? el.value.trim() : "";
+  }
+
+  function clearIntent() {
+    const el = panel?.querySelector(".trh-intent-input");
+    if (el) el.value = "";
   }
 
   function hidePanel() {
@@ -148,7 +175,7 @@
     );
   }
 
-  function requestReplies(tweetText) {
+  function requestReplies(tweetText, userIntent = "") {
     showPanel();
     renderLoading();
     if (!chrome?.runtime?.id) {
@@ -157,7 +184,7 @@
     }
     try {
       chrome.runtime.sendMessage(
-        { type: "generateReplies", tweetText },
+        { type: "generateReplies", tweetText, userIntent },
         (resp) => {
           if (chrome.runtime.lastError) {
             renderError(chrome.runtime.lastError.message);
@@ -186,6 +213,8 @@
       if (composer === activeComposer) return;
 
       activeComposer = composer;
+      // New tweet → fresh intent. (Don't carry the previous tweet's angle over.)
+      clearIntent();
       const tweetText = findTweetTextFor(composer);
       if (!tweetText) {
         showPanel();

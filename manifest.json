@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Twitter Reply Helper",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Generate reply ideas for tweets using your favorite LLM provider.",
   "permissions": ["storage"],
   "host_permissions": [
