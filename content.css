@@ -134,6 +134,19 @@
   text-align: left;
 }
 
+.trh-credit {
+  padding: 8px 12px 10px;
+  border-top: 1px solid #eef3f4;
+  text-align: center;
+  font-size: 11px;
+  color: #536471;
+}
+.trh-credit a {
+  color: #1d9bf0;
+  text-decoration: none;
+}
+.trh-credit a:hover { text-decoration: underline; }
+
 @media (prefers-color-scheme: dark) {
   .trh-panel {
     background: #15202b;
@@ -166,4 +179,8 @@
   .trh-text { color: #e7e9ea; }
   .trh-btn-close { color: #8b98a5; }
   .trh-btn-close:hover { color: #e7e9ea; }
+  .trh-credit {
+    border-top-color: #38444d;
+    color: #8b98a5;
+  }
 }

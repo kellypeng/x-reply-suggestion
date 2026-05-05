@@ -42,6 +42,9 @@
         ></textarea>
       </div>
       <div class="trh-body"></div>
+      <div class="trh-credit">
+        Made by <a href="https://x.com/kellyyuweipeng" target="_blank" rel="noopener">@kellyyuweipeng</a>
+      </div>
     `;
     document.body.appendChild(panel);
     panel.querySelector(".trh-btn-close").addEventListener("click", hidePanel);
