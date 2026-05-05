@@ -1,6 +1,6 @@
-# Twitter Reply Helper
+# X (Twitter) Reply Helper
 
-A small Chrome extension that suggests reply ideas when you focus a Twitter (X) reply box. Bring your own LLM API key, get 5 reply variants in your own voice, and click one to drop it into the composer.
+A small Chrome extension that suggests reply ideas when you focus an X (Twitter) reply box. Bring your own LLM API key, get 5 reply variants in your own voice, and click one to drop it into the composer.
 
 If you can't think of how to phrase something in English, just type your idea (in any language) in the panel and it'll rewrite it as 4 English-language variants for you.
 
