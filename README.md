@@ -16,8 +16,8 @@ If you can't think of how to phrase something in English, just type your idea (i
 
 ## Install
 
-1. **Download** `x-reply-suggestion-vX.Y.Z.zip` from the [latest Release](https://github.com/kellypeng/x-reply-suggestion/releases/latest).
-2. **Unzip** to any folder you'll keep around (e.g. `~/Applications/x-reply-suggestion/`).
+1. **Download** `x-reply-helper-vX.Y.Z.zip` from the [latest Release](https://github.com/kellypeng/x-reply-helper/releases/latest).
+2. **Unzip** to any folder you'll keep around (e.g. `~/Applications/x-reply-helper/`).
 3. **Load it into Chrome:**
    - Open `chrome://extensions`
    - Toggle **Developer mode** on (top right)
@@ -66,8 +66,8 @@ Take a minute to read this — you're about to send tweet text to a third-party 
 ## Development
 
 ```
-git clone https://github.com/kellypeng/x-reply-suggestion.git
-cd x-reply-suggestion
+git clone https://github.com/kellypeng/x-reply-helper.git
+cd x-reply-helper
 ```
 
 Edit any of `manifest.json`, `background.js`, `content.js`, `content.css`, `popup.html`, `popup.js`. Then:
