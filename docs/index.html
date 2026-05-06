@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>X (Twitter) Reply Helper — 5 reply ideas, every tweet, in your voice</title>
+<meta name="description" content="A Chrome extension that suggests 5 distinct reply variants the moment you focus an X reply box. Bring your own LLM key. Free and open source.">
+<meta property="og:title" content="X (Twitter) Reply Helper">
+<meta property="og:description" content="5 reply ideas, every tweet, in your voice. A Chrome extension. Bring your own LLM key. Free and open source.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://x-reply-helper.kellypeng.com/">
+<meta property="og:image" content="https://raw.githubusercontent.com/kellypeng/x-reply-helper/main/icons/icon-128.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:creator" content="@kellyyuweipeng">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/kellypeng/x-reply-helper/main/icons/icon-128.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+
+<header class="nav">
+  <a class="brand" href="/">
+    <svg class="brand-icon" viewBox="0 0 128 128" aria-hidden="true">
+      <rect width="128" height="128" rx="20" fill="#1d9bf0"/>
+      <path d="M 22 30 Q 22 22 30 22 L 98 22 Q 106 22 106 30 L 106 80 Q 106 88 98 88 L 60 88 L 42 106 L 48 88 L 30 88 Q 22 88 22 80 Z" fill="#ffffff"/>
+      <circle cx="46" cy="55" r="6.5" fill="#1d9bf0"/>
+      <circle cx="64" cy="55" r="6.5" fill="#1d9bf0"/>
+      <circle cx="82" cy="55" r="6.5" fill="#1d9bf0"/>
+    </svg>
+    <span>X Reply Helper</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#install">Install</a>
+    <a href="#privacy">Privacy</a>
+    <a href="https://github.com/kellypeng/x-reply-helper" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main id="content">
+  <section class="hero">
+    <h1>5 reply ideas, every tweet, in your voice.</h1>
+    <p class="lead">A Chrome extension that drops 5 distinct reply variants into a panel the moment you focus an X (Twitter) reply box. Bring your own LLM key. Free and open source.</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="https://github.com/kellypeng/x-reply-helper/releases/latest">
+        Install — Free
+      </a>
+      <a class="btn btn-secondary" href="https://github.com/kellypeng/x-reply-helper" target="_blank" rel="noopener">
+        View on GitHub
+      </a>
+    </div>
+    <p class="hero-note">Bilingual (English + 中文). MIT licensed. No tracking.</p>
+  </section>
+
+  <section class="preview" aria-label="Panel preview">
+    <div class="preview-frame">
+      <div class="preview-tweet">
+        <div class="preview-tweet-head">
+          <div class="preview-avatar"></div>
+          <div>
+            <div class="preview-name">@somefounder</div>
+            <div class="preview-handle">replying to a tweet…</div>
+          </div>
+        </div>
+        <div class="preview-tweet-body">AI is making solo founders more productive than ever.</div>
+        <div class="preview-composer">Tweet your reply</div>
+      </div>
+
+      <div class="preview-panel">
+        <div class="preview-header">
+          <span>Reply ideas</span>
+          <span class="preview-regen">Regenerate</span>
+        </div>
+        <div class="preview-intent">
+          <div class="preview-intent-input">想表达什么？(可选, 中英文都行, 回车提交)</div>
+        </div>
+        <div class="preview-cards">
+          <div class="preview-card">
+            <div class="preview-pose">Concrete</div>
+            <div class="preview-text">The gap between idea and shipped has never been smaller</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-pose">Question</div>
+            <div class="preview-text">Wonder what your favorite use case has been so far</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-pose">Counter</div>
+            <div class="preview-text">depends what you're shipping, customer trust still takes the same amount of time</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-pose">Personal</div>
+            <div class="preview-text">finally doesn't feel like you need to hire people just to test an idea</div>
+          </div>
+          <div class="preview-card">
+            <div class="preview-pose">Playful</div>
+            <div class="preview-text">solo founder = me, myself, and 4 AI agents</div>
+          </div>
+        </div>
+        <div class="preview-credit">
+          Made by <span class="preview-link">@kellyyuweipeng</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <h2>What it does</h2>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-icon">5</div>
+        <h3>Five poses, every time</h3>
+        <p>Each suggestion takes a different angle: Concrete, Question, Counter, Personal, Playful. So you always have real variety to pick from, not five rephrasings of the same thing.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">✎</div>
+        <h3>Type your angle, get phrasing</h3>
+        <p>Have an idea but stuck on how to phrase it in English? Type it in any language. Get 4 native English variants of <em>your</em> idea — short, sentence, playful, or echoing the original tweet.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Bring your own LLM</h3>
+        <p>Anthropic, OpenAI, Kimi, Zhipu GLM. Use whichever provider you already pay for, or want to try. Switch any time. Each key remembered separately.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⊙</div>
+        <h3>In your voice, over time</h3>
+        <p>Every reply you actually click into the composer gets remembered locally. The suggestions drift toward your real voice the more you use it.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚿</div>
+        <h3>Privacy-first</h3>
+        <p>Your API key stays on your machine. No telemetry, no analytics, no server. Just you and the provider you chose.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">中</div>
+        <h3>Bilingual</h3>
+        <p>English tweet → English reply. Chinese tweet → Chinese reply. Detected via JS-side script analysis, not by asking the model to guess.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="install" id="install">
+    <h2>Install in 60 seconds</h2>
+    <ol class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Download the zip</h3>
+          <p>Grab <code>x-reply-helper-vX.Y.Z.zip</code> from the <a href="https://github.com/kellypeng/x-reply-helper/releases/latest" target="_blank" rel="noopener">latest Release</a>, then unzip it somewhere you'll keep around (e.g. <code>~/Applications/x-reply-helper/</code>).</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Load it into Chrome</h3>
+          <p>Open <code>chrome://extensions</code>, toggle <strong>Developer mode</strong> on (top right), click <strong>Load unpacked</strong>, and pick the unzipped folder.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Add an API key</h3>
+          <p>Click the new toolbar icon. Pick a provider (Zhipu GLM has a free tier — easiest entry point), paste your key, save.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Open X and reply</h3>
+          <p>Click any tweet's reply box. The panel pops up with 5 suggestions. Click a card to insert it.</p>
+        </div>
+      </li>
+    </ol>
+    <p class="install-note">Not on the Chrome Web Store yet — early personal tool. Source is fully open if you want to audit before installing.</p>
+  </section>
+
+  <section class="privacy" id="privacy">
+    <h2>Privacy</h2>
+    <ul class="privacy-list">
+      <li><strong>Your key never leaves your machine</strong> beyond the LLM provider's API endpoint when generating a reply.</li>
+      <li><strong>No telemetry, no analytics, no server.</strong> The extension is static client code; there is no backend to phone home to.</li>
+      <li><strong>The tweet you're replying to + any angle you type</strong> goes to the LLM provider you selected. Each provider has its own data-handling policy; consult theirs.</li>
+      <li><strong>Picked replies are stored locally only</strong> (capped at 50 entries) for voice calibration. Never leaves your machine.</li>
+    </ul>
+  </section>
+
+  <section class="about">
+    <h2>About</h2>
+    <p>Built by <a href="https://x.com/kellyyuweipeng" target="_blank" rel="noopener">Kelly Peng</a>, an indie creator on X. This is one of a handful of small tools I'm making for X creators who want to engage more without losing their own voice.</p>
+    <p>Found a bug or want a feature? <a href="https://github.com/kellypeng/x-reply-helper/issues" target="_blank" rel="noopener">Open an issue</a> or DM me on X.</p>
+  </section>
+</main>
+
+<footer class="footer">
+  <div>
+    <a href="https://github.com/kellypeng/x-reply-helper" target="_blank" rel="noopener">GitHub</a>
+    ·
+    <a href="https://github.com/kellypeng/x-reply-helper/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+    ·
+    <a href="https://x.com/kellyyuweipeng" target="_blank" rel="noopener">@kellyyuweipeng</a>
+  </div>
+  <div class="footer-credit">© Kelly Peng</div>
+</footer>
+
+</body>
+</html>
