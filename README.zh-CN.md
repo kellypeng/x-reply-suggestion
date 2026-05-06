@@ -1,86 +1,122 @@
 # X (Twitter) Reply Helper
 
+<img src="icons/icon-128.png" width="64" align="right" alt="">
+
 [English](README.md) | **中文**
 
-一个小巧的 Chrome 扩展。点开 X (Twitter) 的回复框时会自动弹出 5 条回复建议 —— 用你自己的 LLM API key 生成、贴合你的语感，点一下就能插入到回复框。
+🌐 **在线预览：** [x-reply-helper.kellypeng.com](https://x-reply-helper.kellypeng.com)
 
-如果你想表达某个意思但不知道怎么用英文说，直接在面板顶部用任何语言写下你的想法，它会给你 4 条英文（或中文）改写。
+一个免费的 Chrome 扩展。点开 X（Twitter）的回复框那一刻，5 条不同角度的回复就在旁边自动弹出。挑一条点一下，自动填进回复框 —— 而且听起来像你自己说的话。
 
-> 状态：早期个人工具，自用为主。Issue 和 PR 都欢迎。
+---
 
-## 功能
+## 这是什么
 
-- **自动模式** —— 每次点击回复框，弹出 5 条不同"姿势"的建议：数据 / 追问 / 反转 / 经验 / 调侃（英文是 Concrete / Question / Counter / Personal / Playful）
-- **改写模式** —— 在面板顶部输入你想表达的意思（任何语言），得到 4 条变体：短 / 句 / 幽默 / 呼应
-- **硬语言匹配** —— 英文推文 → 英文回复，中文推文 → 中文回复。在 JS 端用脚本检测，不让模型自己猜
-- **多家 LLM 支持** —— Anthropic、OpenAI、Kimi（月之暗面）、智谱 GLM 任选，用你已有的 key 即可
-- **持续语感校准** —— 你每次点击插入的那条回复都会本地记录，最近选过的会喂回 system prompt，让未来的建议越来越贴近你的真实语感
+你在刷 X。看到一条想回复的推文。开始打字 —— 但是想不出说啥。盯着光标看 30 秒，最后默默关掉。
 
-## 安装
+这个扩展就是来解决这个的。
 
-1. **下载** [最新 Release](https://github.com/kellypeng/x-reply-helper/releases/latest) 页面里的 `x-reply-helper-vX.Y.Z.zip`
-2. **解压**到一个你能稳定保留的目录（比如 `~/Applications/x-reply-helper/`）
-3. **加载到 Chrome**：
-   - 浏览器地址栏输入 `chrome://extensions` 回车
-   - 右上角打开 **开发者模式 / Developer mode**
-   - 点击 **加载已解压的扩展程序 / Load unpacked**
-   - 选择刚才解压的目录
-4. 工具栏右侧会出现这个扩展的蓝色气泡图标
+点开任意 X 回复框的一瞬间，旁边会弹出一个小面板，里面是 **5 条已经写好的回复建议**，每一条都从不同角度切入。看一下，点最像你说的那一条，它就自动填到 X 的回复框里了。
 
-> 为什么不上 Chrome Web Store？暂时没上 —— 现在是早期个人工具，后续可能会上架。
+特别适合：
 
-## 配置
+- **英语不是母语的人** —— 心里有想法，但不知道怎么用英文说得地道。
+- **天生不擅长在网上说话的人** —— 没有"什么样的回复算好回复"的本能。
+- **没时间的人** —— 不想为一条回复琢磨好几个版本。
 
-1. 点击工具栏的扩展图标打开设置弹窗
-2. 在 **Provider** 下拉框里选一个服务商
-3. 粘贴对应的 **API Key**。每个 Provider 各自记住自己的 key，可以随时切换
-4. 可选：在 **Model** 里指定具体模型。留空就用 Provider 的默认
-5. 点 **Save**
+## 你能用到什么
 
-获取 key 的链接：
+- **每次都给 5 种不同角度** —— 不是同一句话改 5 遍，是 5 种**真的不一样**的视角：一个具体的点 / 顺势提问 / 礼貌反驳 / 个人经验 / 玩个梗。让你**真的有得挑**。
+- **想说什么但卡在英文怎么说？** 用任何语言把意思写进去（中文、英文、中英混合都行），它会给你 4 种地道英文表达。
+- **回复语言自动跟原推匹配。** 英文推 → 英文回复，中文推 → 中文回复。你不用管。
+- **回复像你说的话，不是机器人。** 你点过的回复会被记下来，下次的建议会越来越像你的语感。
+- **免费、开源、所有数据都在你电脑里。** 不订阅、不追踪、没服务器。只需要你自己的 AI key（下面会讲）。
 
-| Provider | 默认模型 | 获取 key |
+## 安装（大约 60 秒）
+
+1. **下载 .zip 文件** —— 去 [最新 release 页面](https://github.com/kellypeng/x-reply-helper/releases/latest)，下载叫 `x-reply-helper-vX.Y.Z.zip` 的那个文件。
+2. **解压**到一个固定的文件夹（哪儿都行，比如 `Documents/x-reply-helper/`）。
+3. **打开 Chrome**，地址栏输入 `chrome://extensions` 回车。
+4. **打开右上角的"开发者模式"**。这是正常步骤 —— 没上架 Chrome 商店的扩展都是这么装的。
+5. **点击"加载已解压的扩展程序"**，选你刚才解压的那个文件夹。
+6. **完成。** 工具栏右边会出现一个蓝色的对话气泡图标。
+
+> **为什么没在 Chrome 商店？** 后续会上架。现在是开发者安装方式。代码全部公开，安装前可以放心检查每一行。
+
+## 设置 AI key（一次性，大约 2 分钟）
+
+这个扩展需要一个 AI key 才能生成回复。Key 是你自己的 —— 这样工具能保持免费。
+
+1. 点工具栏的**蓝色对话气泡图标**。
+2. **选一个服务商**（下表帮你选）。
+3. **粘贴你的 API Key**，点 **Save**。
+
+### 我应该选哪家？
+
+| 服务商 | 适合你如果… | 有免费额度吗？|
 |---|---|---|
-| Anthropic (Claude) | `claude-haiku-4-5` | https://console.anthropic.com/settings/keys |
-| OpenAI | `gpt-4o-mini` | https://platform.openai.com/api-keys |
-| Kimi (月之暗面) | `moonshot-v1-8k` | https://platform.moonshot.cn/console/api-keys |
-| 智谱 GLM | `glm-4-flash` | https://open.bigmodel.cn/usercenter/apikeys |
+| **智谱 GLM** | 在中国大陆、想免费上手 | ✓ 有免费额度，最好上手 |
+| **Kimi（月之暗面）** | 想要最好的中文回复质量 | ✓ 有免费额度（有限制）|
+| **OpenAI** | 已经在用 ChatGPT 的 API | ❌ 需要付费 |
+| **Anthropic（Claude）** | 想要最高质量的回复（推荐）| ❌ 需要付费 |
 
-**国内用户推荐**：智谱 GLM-Flash 有免费额度，上手最容易；Kimi 中文回复质量也很好；Anthropic 和 OpenAI 需要海外信用卡。
+每家服务商的注册链接在 popup 里都有 —— 点开 → 注册 → 拿到 key → 复制粘贴回扩展。
 
-## 使用
+> **"为什么需要 API key？"** —— 没 key 扩展就跟 AI 说不上话。可以理解为入场券。用你自己的 key，你按用量付费（很多服务商有免费额度），数据也只在你和你选的服务商之间流转。
 
-1. 打开 `x.com`（或 `twitter.com`）
-2. 点开任意推文的回复框
-3. 右下角弹出面板，里面 5 条建议。点任意一条就直接插入到回复框
-4. 想重新生成 → 点面板顶部的 **Regenerate**
-5. **改写模式**：在面板顶部的输入框里写下你想表达的意思（任何语言都行），按 **回车**，会得到 4 条变体
-6. 想关掉面板：按 **Esc**、点面板外的地方、或点 **×**
+## 怎么用
+
+1. 打开 **x.com**（或 twitter.com）。
+2. **点开任意推文下面的回复框**。
+3. **右下角弹出一个面板**，里面是 5 条不同角度的回复建议：
+   - **数据** —— 一个具体的点
+   - **追问** —— 顺势问一句
+   - **反驳** —— 礼貌不同意
+   - **经验** —— 你自己的故事
+   - **调侃** —— 玩个梗
+4. **点击任意一条** —— 自动填进 X 的回复框。
+5. 想换一组？点面板顶部的 **Regenerate**。
+
+### 想要按你自己的角度回复？
+
+在面板顶部的小输入框里写下你想表达的意思（中文、英文、中英混合都行），按 **回车**。会得到 4 条按你的角度生成的变体。
+
+### 关掉面板
+
+按 **Esc**，或点面板外的地方，或点面板右上角的 **×**。
 
 ## 隐私
 
-发推前花一分钟看下这段 —— 你的推文文本会被发给第三方 LLM。
+人话版：
 
-- 你的 API key **只**保存在本机的 `chrome.storage.local` 里。除了在生成回复时发到你选的 LLM 服务商接口，其他任何地方都不会发出去
-- 你正在回复的那条推文文本 + 你输入的想法会发到**你选的 LLM 服务商**（Anthropic / OpenAI / Moonshot / 智谱），仅用于生成回复建议。每家服务商有各自的数据政策，请自行查看
-- 你点击插入的回复会本地记录在 `chrome.storage.local`（最多保留 50 条），用于语感校准。这些数据**永远不出本机**
-- 这个扩展**完全不**做任何统计、追踪、上报。**没有服务器**
-- 想清空本地的选择历史：打开扩展的 service worker DevTools console，运行 `chrome.storage.local.remove('pickHistory')`
+- ✅ 你的 API key **永远不会离开你的电脑**，除了发给你选的 AI 服务商接口（生成回复时）。
+- ✅ 你正在回复的那条推文 + 你输入的角度文字，会发给你选的 AI 服务商 —— 这是生成回复必需的。
+- ✅ 你点击插入过的回复会**保存在本地**，让建议越来越像你的语感。**这些数据不会发到任何地方**。
+- ✅ 扩展**没有服务器、没有统计、没有任何追踪**。
+- ✅ 想清空保存过的回复历史？打开扩展的 service worker DevTools console，运行 `chrome.storage.local.remove('pickHistory')`。或者直接卸载重装。
 
-## 开发
+每家 AI 服务商都有自己的隐私政策 —— 在意的话去看他们的官方说明。
 
-```
+## 求助 / 反馈
+
+- 发现 bug 或想提建议？[提个 issue](https://github.com/kellypeng/x-reply-helper/issues)。
+- 想聊聊？[在 X 上找我](https://x.com/kellyyuweipeng)。
+
+作者 [凯莉彭](https://x.com/kellyyuweipeng) —— 一个 X 上的独立创作者。这是我做的几个"给 X 创作者用的小工具"之一，目标是让大家更愿意发声、又不丢自己的语感。
+
+---
+
+## 给开发者
+
+纯 HTML / JS Chrome MV3 扩展。无构建步骤、无依赖。
+
+```sh
 git clone https://github.com/kellypeng/x-reply-helper.git
 cd x-reply-helper
+# 改 manifest.json / background.js / content.js / content.css / popup.html / popup.js 任意一个
+# 然后：
+# 1. 打开 chrome://extensions，reload 这个扩展
+# 2. 在 X.com 的 tab 按 Cmd+R（或 Ctrl+R）—— content script 不会自动重新注入
 ```
 
-直接改 `manifest.json`、`background.js`、`content.js`、`content.css`、`popup.html`、`popup.js` 任意一个，然后：
-
-1. `chrome://extensions` → reload 这个扩展
-2. 在 X.com 的标签页按 Cmd+R（或 Ctrl+R）—— content script 不会自动重新注入
-
-没有构建步骤、没有依赖。就是几个静态文件 + Chrome 扩展 API。
-
-## License
-
-[MIT](LICENSE) © Kelly Peng
+License: [MIT](LICENSE) © 凯莉彭
