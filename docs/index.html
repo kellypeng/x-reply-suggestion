@@ -369,6 +369,45 @@
       margin-right: 3px;
       color: var(--text-soft);
     }
+    /* Hero panel — focused reply composer (mock of X composer) */
+    .panel-composer {
+      margin: 14px 14px 0;
+      border: 2px solid var(--accent);
+      border-radius: 10px;
+      padding: 11px 14px;
+      background: var(--accent-soft);
+    }
+    .panel-composer-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--accent-deep);
+      letter-spacing: 0.06em;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .panel-composer-text {
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 28px;
+    }
+    .panel-composer-text .cursor {
+      display: inline-block;
+      width: 1.5px;
+      height: 14px;
+      background: var(--accent);
+      vertical-align: text-bottom;
+      animation: blink 1.1s infinite step-end;
+    }
+    .panel-section-label {
+      padding: 14px 18px 4px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      border-top: 1px dashed var(--border);
+      margin-top: 6px;
+    }
+
     .hero-spec-note {
       margin-top: 14px;
       font-family: var(--mono);
@@ -1322,6 +1361,13 @@
             </div>
             <div class="panel-tweet-body" data-i18n="hero.panel.tweet">AI is making solo founders more productive than ever.</div>
           </div>
+          <div class="panel-composer">
+            <div class="panel-composer-label" data-i18n="hero.panel.composer">▎ REPLY · FOCUSED</div>
+            <div class="panel-composer-text"><span class="cursor"></span></div>
+          </div>
+          <div class="panel-section-label">
+            <span data-i18n="hero.panel.helper">▎ X Reply Helper</span>
+          </div>
           <div class="panel-cards">
             <div class="panel-card-item">
               <span class="panel-pose concrete" data-i18n="pose.concrete">Concrete</span>
@@ -1956,6 +2002,8 @@
         "hero.panel.live": "在线",
         "hero.panel.name": "凯莉彭",
         "hero.panel.time": "· 2 小时",
+        "hero.panel.composer": "▎ 回复框 · 已聚焦",
+        "hero.panel.helper": "▎ X Reply Helper",
         "hero.panel.tweet": "AI 让独立创业者比以往任何时候都能打。",
         "hero.panel.r1": "从「想到」到「上线」之间，距离从来没这么短过",
         "hero.panel.r2": "你最爽的使用场景是哪个？想听听",
