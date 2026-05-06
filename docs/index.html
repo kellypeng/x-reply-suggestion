@@ -442,121 +442,6 @@
     }
 
     /* ==============================================================
-       EXAMPLES — tweet → 5 variants (custom for this product)
-       ============================================================== */
-    .examples-stack { display: grid; gap: 24px; }
-    .example {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-    .example-head {
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--border);
-      background: var(--bg-row);
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 24px;
-      align-items: start;
-    }
-    .example-head-meta {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted-2);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 8px;
-    }
-    .example-tweet {
-      font-size: 15.5px;
-      line-height: 1.5;
-      color: var(--text);
-      max-width: 640px;
-    }
-    .example-tweet .handle {
-      color: var(--muted);
-      font-family: var(--mono);
-      font-size: 12px;
-      margin-right: 8px;
-    }
-    .example-tag {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--accent);
-      background: var(--accent-soft);
-      padding: 4px 10px;
-      border-radius: 4px;
-      letter-spacing: 0.04em;
-      font-weight: 600;
-      white-space: nowrap;
-    }
-    .example-replies {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    .example-reply {
-      padding: 18px 24px;
-      display: grid;
-      grid-template-columns: 92px 1fr;
-      gap: 16px;
-      border-top: 1px solid var(--border-soft);
-    }
-    .example-reply:nth-child(odd) { border-right: 1px solid var(--border-soft); }
-    .example-reply:nth-child(1), .example-reply:nth-child(2) { border-top: 0; }
-    .example-pose {
-      font-family: var(--mono);
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--pose-color, var(--accent));
-      padding-top: 2px;
-    }
-    .example-pose.concrete { --pose-color: var(--pose-concrete); }
-    .example-pose.question { --pose-color: var(--pose-question); }
-    .example-pose.counter  { --pose-color: var(--pose-counter); }
-    .example-pose.personal { --pose-color: var(--pose-personal); }
-    .example-pose.playful  { --pose-color: var(--pose-playful); }
-    .example-reply-text {
-      font-size: 14.5px;
-      color: var(--text);
-      line-height: 1.55;
-    }
-    .example-reply.full {
-      grid-column: 1 / -1;
-    }
-    /* Pose legend strip */
-    .pose-legend {
-      display: flex;
-      gap: 18px 28px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-      padding: 14px 20px;
-      background: var(--bg-soft);
-      border: 1px solid var(--border-soft);
-      border-radius: 10px;
-    }
-    .pose-legend-item {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-family: var(--mono);
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-    .pose-dot {
-      width: 9px; height: 9px; border-radius: 50%;
-      background: var(--pose-color, var(--accent));
-    }
-    .pose-legend-item.concrete .pose-dot { background: var(--pose-concrete); }
-    .pose-legend-item.question .pose-dot { background: var(--pose-question); }
-    .pose-legend-item.counter  .pose-dot { background: var(--pose-counter); }
-    .pose-legend-item.personal .pose-dot { background: var(--pose-personal); }
-    .pose-legend-item.playful  .pose-dot { background: var(--pose-playful); }
-    .pose-legend-item .label { font-weight: 600; color: var(--text); margin-right: 6px; letter-spacing: 0.04em; }
-
-    /* ==============================================================
        FEATURES
        ============================================================== */
     .features-grid {
@@ -1244,9 +1129,6 @@
       .section-head h2, .appshot-wrap h2, section.cta h2 { font-size: 36px; }
       .vs-head, .vs-row { padding-left: 14px; padding-right: 14px; }
       .vs-head { font-size: 10px; }
-      .example-replies { grid-template-columns: 1fr; }
-      .example-reply:nth-child(odd) { border-right: 0; }
-      .example-reply:nth-child(2) { border-top: 1px solid var(--border-soft); }
       .appshot-body { grid-template-columns: 1fr; min-height: 0; }
       .appshot-x { border-right: 0; border-bottom: 1px solid var(--border); }
       .appshot-x-composer-arrow { display: none; }
@@ -1260,9 +1142,6 @@
       .vs-head, .vs-row { grid-template-columns: 1.4fr repeat(4, 1fr); font-size: 12px; }
       .vs-head { font-size: 9px; }
       .foot-grid { grid-template-columns: 1fr; }
-      .pose-legend { gap: 10px 18px; }
-      .example-head { grid-template-columns: 1fr; }
-      .example-reply { grid-template-columns: 1fr; gap: 6px; }
     }
   </style>
 </head>
@@ -1280,7 +1159,6 @@
         <div class="brand-name">X Reply Helper<span class="ver">v0.4</span></div>
       </a>
       <nav class="nav">
-        <a href="#examples" class="nav-link" data-i18n="nav.examples">Examples</a>
         <a href="#features" class="nav-link" data-i18n="nav.features">Features</a>
         <a href="#install" class="nav-link" data-i18n="nav.install">Install</a>
         <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
@@ -1381,157 +1259,6 @@
           </div>
         </div>
         <div class="hero-spec-note" data-i18n="hero.panel.note">* representative output, default settings</div>
-      </div>
-    </section>
-
-    <!-- ============== EXAMPLES ============== -->
-    <section id="examples" class="section">
-      <div class="section-head">
-        <div class="eyebrow"><span data-i18n="demo.eyebrow">▎ The headline pattern</span></div>
-        <h2>
-          <span data-i18n="demo.title1">One tweet.</span>
-          <span class="serif" data-i18n="demo.title2">Five honest angles.</span>
-        </h2>
-        <p class="lede" data-i18n="demo.lede">Every reply takes a different stance, so you actually have something to choose from — not five rephrasings of the same agreeable nothing.</p>
-      </div>
-
-      <!-- Pose legend -->
-      <div class="pose-legend">
-        <div class="pose-legend-item concrete">
-          <span class="pose-dot"></span>
-          <span class="label" data-i18n="pose.concrete">Concrete</span>
-          <span data-i18n="pose.concrete.def">a sharp specific take</span>
-        </div>
-        <div class="pose-legend-item question">
-          <span class="pose-dot"></span>
-          <span class="label" data-i18n="pose.question">Question</span>
-          <span data-i18n="pose.question.def">an honest ask</span>
-        </div>
-        <div class="pose-legend-item counter">
-          <span class="pose-dot"></span>
-          <span class="label" data-i18n="pose.counter">Counter</span>
-          <span data-i18n="pose.counter.def">a respectful disagree</span>
-        </div>
-        <div class="pose-legend-item personal">
-          <span class="pose-dot"></span>
-          <span class="label" data-i18n="pose.personal">Personal</span>
-          <span data-i18n="pose.personal.def">your own experience</span>
-        </div>
-        <div class="pose-legend-item playful">
-          <span class="pose-dot"></span>
-          <span class="label" data-i18n="pose.playful">Playful</span>
-          <span data-i18n="pose.playful.def">a one-liner</span>
-        </div>
-      </div>
-
-      <div class="examples-stack">
-        <!-- Example 1 -->
-        <article class="example">
-          <div class="example-head">
-            <div>
-              <div class="example-head-meta" data-i18n="ex.1.meta">EXAMPLE · ENGLISH · GENERAL TIMELINE</div>
-              <div class="example-tweet">
-                <span class="handle">@paulg</span>
-                <span data-i18n="ex.1.tweet">"Don't try to make your product perfect. Try to make it useful."</span>
-              </div>
-            </div>
-            <span class="example-tag" data-i18n="ex.1.tag">advice tweet</span>
-          </div>
-          <div class="example-replies">
-            <div class="example-reply">
-              <span class="example-pose concrete" data-i18n="pose.concrete">Concrete</span>
-              <div class="example-reply-text" data-i18n="ex.1.r1">"perfect" is a feeling about you, "useful" is a fact about the user</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose question" data-i18n="pose.question">Question</span>
-              <div class="example-reply-text" data-i18n="ex.1.r2">do you think this changes once you have paying customers, or is it the same forever</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose counter" data-i18n="pose.counter">Counter</span>
-              <div class="example-reply-text" data-i18n="ex.1.r3">at some point "useful but rough" stops being charming and starts losing trust though</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose personal" data-i18n="pose.personal">Personal</span>
-              <div class="example-reply-text" data-i18n="ex.1.r4">spent 6 weeks polishing a feature nobody opened. learned this one the expensive way</div>
-            </div>
-            <div class="example-reply full">
-              <span class="example-pose playful" data-i18n="pose.playful">Playful</span>
-              <div class="example-reply-text" data-i18n="ex.1.r5">my project: ✅ useful, ❌ perfect, ⚠️ unreviewed since 2023</div>
-            </div>
-          </div>
-        </article>
-
-        <!-- Example 2 -->
-        <article class="example">
-          <div class="example-head">
-            <div>
-              <div class="example-head-meta" data-i18n="ex.2.meta">EXAMPLE · ENGLISH · TECH</div>
-              <div class="example-tweet">
-                <span class="handle">@dhh</span>
-                <span data-i18n="ex.2.tweet">"Most engineering managers should just go back to writing code."</span>
-              </div>
-            </div>
-            <span class="example-tag" data-i18n="ex.2.tag">hot take</span>
-          </div>
-          <div class="example-replies">
-            <div class="example-reply">
-              <span class="example-pose concrete" data-i18n="pose.concrete">Concrete</span>
-              <div class="example-reply-text" data-i18n="ex.2.r1">half the meetings exist because the manager isn't allowed to ship anymore</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose question" data-i18n="pose.question">Question</span>
-              <div class="example-reply-text" data-i18n="ex.2.r2">what do you think breaks first at scale — the IC manager, or the team underneath?</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose counter" data-i18n="pose.counter">Counter</span>
-              <div class="example-reply-text" data-i18n="ex.2.r3">good managers do real work, it just doesn't show up in git log. unblocking 8 people > shipping 1 feature</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose personal" data-i18n="pose.personal">Personal</span>
-              <div class="example-reply-text" data-i18n="ex.2.r4">went IC → manager → IC. happiest in the IC phases. some of us just shouldn't be doing this</div>
-            </div>
-            <div class="example-reply full">
-              <span class="example-pose playful" data-i18n="pose.playful">Playful</span>
-              <div class="example-reply-text" data-i18n="ex.2.r5">my manager reads this then schedules a 1:1 to discuss</div>
-            </div>
-          </div>
-        </article>
-
-        <!-- Example 3 — bilingual showcase -->
-        <article class="example">
-          <div class="example-head">
-            <div>
-              <div class="example-head-meta" data-i18n="ex.3.meta">EXAMPLE · CHINESE TWEET → CHINESE REPLIES</div>
-              <div class="example-tweet">
-                <span class="handle">@indiedev_zh</span>
-                <span data-i18n="ex.3.tweet">"做独立开发者最难的不是写代码，而是接受一个产品可能永远没人用。"</span>
-              </div>
-            </div>
-            <span class="example-tag" data-i18n="ex.3.tag">bilingual</span>
-          </div>
-          <div class="example-replies">
-            <div class="example-reply">
-              <span class="example-pose concrete" data-i18n="pose.concrete">Concrete</span>
-              <div class="example-reply-text" data-i18n="ex.3.r1">没人用其实有信号——比如朋友夸完不分享，那就是不够痛</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose question" data-i18n="pose.question">Question</span>
-              <div class="example-reply-text" data-i18n="ex.3.r2">你觉得是「写代码 100 小时 + 找用户 1 小时」的比例问题吗</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose counter" data-i18n="pose.counter">Counter</span>
-              <div class="example-reply-text" data-i18n="ex.3.r3">最难的其实是接受自己写得很烂——没人用反而是结果</div>
-            </div>
-            <div class="example-reply">
-              <span class="example-pose personal" data-i18n="pose.personal">Personal</span>
-              <div class="example-reply-text" data-i18n="ex.3.r4">第一个产品做了 8 个月零用户，但学到的东西足够支撑后面三年</div>
-            </div>
-            <div class="example-reply full">
-              <span class="example-pose playful" data-i18n="pose.playful">Playful</span>
-              <div class="example-reply-text" data-i18n="ex.3.r5">独立开发者三件套：野心、咖啡、和一个永远没人用的产品</div>
-            </div>
-          </div>
-        </article>
       </div>
     </section>
 
@@ -1931,7 +1658,6 @@
         <div class="foot-col">
           <h6 data-i18n="foot.col1.title">Product</h6>
           <ul>
-            <li><a href="#examples" data-i18n="nav.examples">Examples</a></li>
             <li><a href="#features" data-i18n="nav.features">Features</a></li>
             <li><a href="#install" data-i18n="nav.install">Install</a></li>
             <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
@@ -1967,7 +1693,6 @@
     const I18N = {
       en: {}, // English is the source — strings live in markup
       zh: {
-        "nav.examples": "示例",
         "nav.features": "功能",
         "nav.install": "安装",
         "nav.faq": "FAQ",
@@ -2004,43 +1729,10 @@
         "pose.counter": "反驳",
         "pose.personal": "个人",
         "pose.playful": "玩梗",
-        "pose.concrete.def": "一个具体的点",
-        "pose.question.def": "顺势问一句",
-        "pose.counter.def": "礼貌不同意",
-        "pose.personal.def": "聊聊自己",
-        "pose.playful.def": "玩个梗",
 
-        "demo.eyebrow": "▎ 怎么用",
-        "demo.title1": "同一条推，",
-        "demo.title2": "五种回法。",
-        "demo.lede": "每条都换一个角度，让你真的有得挑——不是同一句废话改 5 遍。",
 
-        "ex.1.meta": "示例 · 英文推 · 通用",
-        "ex.1.tweet": "「别想着把产品做完美。先把它做得有用。」",
-        "ex.1.tag": "鸡汤金句",
-        "ex.1.r1": "「完美」是你自己的感觉，「有用」是用户的事实",
-        "ex.1.r2": "你觉得有了付费用户之后这话还成立吗",
-        "ex.1.r3": "但「有用但糙」过了某个阶段就不可爱了，会开始掉信任",
-        "ex.1.r4": "上次为了一个没人点的功能磨了 6 周。这堂课交了不少学费",
-        "ex.1.r5": "我的项目：✅ 有用、❌ 完美、⚠️ 2023 之后没维护过",
 
-        "ex.2.meta": "示例 · 英文推 · 科技圈",
-        "ex.2.tweet": "「大多数工程经理都该回去写代码。」",
-        "ex.2.tag": "暴论",
-        "ex.2.r1": "一半的会议之所以存在，是因为经理不被允许写代码了",
-        "ex.2.r2": "规模上来之后先崩的是经理本人，还是底下的团队？",
-        "ex.2.r3": "好经理也在干活，只是不会出现在 git log 里。给 8 个人解决问题 > 自己写一个功能",
-        "ex.2.r4": "我 IC → 经理 → 又转回 IC。还是 IC 那段最爽。有些人就不适合管人",
-        "ex.2.r5": "我经理看到这条之后约了我 1:1 来聊",
 
-        "ex.3.meta": "示例 · 中文推 → 中文回复",
-        "ex.3.tweet": "「做独立开发者最难的不是写代码，而是接受一个产品可能永远没人用。」",
-        "ex.3.tag": "双语",
-        "ex.3.r1": "没人用其实是有信号的——朋友夸完不转发，就是还不够痛",
-        "ex.3.r2": "你觉得是不是「100 小时写代码 + 1 小时找用户」的比例出了问题",
-        "ex.3.r3": "我觉得最难的是承认自己写得不够好，没人用反而只是结果",
-        "ex.3.r4": "我第一个产品做了 8 个月零用户，但学到的东西够我吃后面三年",
-        "ex.3.r5": "独立开发三件套：野心、咖啡、一个永远没人用的产品",
 
         "features.eyebrow": "▎ 能做什么",
         "features.title1": "顺着你的发推习惯设计。",
