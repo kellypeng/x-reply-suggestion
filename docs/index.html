@@ -291,6 +291,14 @@
       width: 22px; height: 22px;
       border-radius: 50%;
       background: linear-gradient(135deg, #d4a574, #8a6a4a);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .panel-tweet-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      display: block;
     }
     .panel-tweet-handle {
       font-size: 12.5px;
@@ -791,6 +799,14 @@
       width: 36px; height: 36px;
       border-radius: 50%;
       background: linear-gradient(135deg, #cfa37a, #6e553a);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .appshot-x-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      display: block;
     }
     .appshot-x-handle { font-size: 13px; font-weight: 700; }
     .appshot-x-handle .at { color: var(--muted); font-weight: 400; margin-left: 4px; font-size: 12px; }
@@ -1301,8 +1317,8 @@
           </div>
           <div class="panel-tweet">
             <div class="panel-tweet-meta">
-              <div class="panel-tweet-avatar"></div>
-              <div class="panel-tweet-handle">@kellyyuweipeng<span class="grey" data-i18n="hero.panel.time">· 2h</span></div>
+              <div class="panel-tweet-avatar"><img src="kelly-portrait.jpg" alt="" /></div>
+              <div class="panel-tweet-handle"><span data-i18n="hero.panel.name">Kelly Peng</span><span class="grey">@kellyyuweipeng <span data-i18n="hero.panel.time">· 2h</span></span></div>
             </div>
             <div class="panel-tweet-body" data-i18n="hero.panel.tweet">AI is making solo founders more productive than ever.</div>
           </div>
@@ -1669,8 +1685,8 @@
             <div class="appshot-x">
               <div class="appshot-x-tweet">
                 <div class="appshot-x-tweet-head">
-                  <div class="appshot-x-avatar"></div>
-                  <div class="appshot-x-handle">kellyyuweipeng<span class="at">@kellyyuweipeng · 2h</span></div>
+                  <div class="appshot-x-avatar"><img src="kelly-portrait.jpg" alt="" /></div>
+                  <div class="appshot-x-handle"><span data-i18n="appshot.x.name">Kelly Peng</span><span class="at">@kellyyuweipeng · 2h</span></div>
                 </div>
                 <div class="appshot-x-body" data-i18n="hero.panel.tweet">AI is making solo founders more productive than ever.</div>
               </div>
@@ -1938,6 +1954,7 @@
 
         "hero.panel.url": "x.com/kellyyuweipeng/status/1857…",
         "hero.panel.live": "在线",
+        "hero.panel.name": "凯莉彭",
         "hero.panel.time": "· 2 小时",
         "hero.panel.tweet": "AI 让独立创业者比以往任何时候都能打。",
         "hero.panel.r1": "从「想到」到「上线」之间，距离从来没这么短过",
@@ -2042,6 +2059,7 @@
         "appshot.eyebrow": "▎ 长这样",
         "appshot.title1": "点开回复框，",
         "appshot.title2": "面板就在那。",
+        "appshot.x.name": "凯莉彭",
         "appshot.composer": "▎ 回复框 · 已聚焦",
         "appshot.panel.title": "回复建议",
         "appshot.panel.regen": "重新生成",
