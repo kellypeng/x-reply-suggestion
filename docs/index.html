@@ -1,206 +1,2141 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>X (Twitter) Reply Helper — 5 reply ideas, every tweet, in your voice</title>
-<meta name="description" content="A Chrome extension that suggests 5 distinct reply variants the moment you focus an X reply box. Bring your own LLM key. Free and open source.">
-<meta property="og:title" content="X (Twitter) Reply Helper">
-<meta property="og:description" content="5 reply ideas, every tweet, in your voice. A Chrome extension. Bring your own LLM key. Free and open source.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://x-reply-helper.kellypeng.com/">
-<meta property="og:image" content="https://raw.githubusercontent.com/kellypeng/x-reply-helper/main/icons/icon-128.png">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:creator" content="@kellyyuweipeng">
-<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/kellypeng/x-reply-helper/main/icons/icon-128.png">
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>X Reply Helper · Five takes. Every tweet.</title>
+  <meta name="description" content="A free Chrome extension that drops 5 distinct reply variants the moment you focus an X reply box. Bring your own LLM key. 100% local. Open source." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="X Reply Helper · Five takes. Every tweet." />
+  <meta property="og:description" content="5 reply ideas, every tweet, in your voice. Chrome extension. Bring your own LLM key. Open source." />
+  <meta property="og:url" content="https://github.com/kellyyuweipeng/x-reply-helper" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:creator" content="@kellyyuweipeng" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ==============================================================
+       Tokens — warm orange spec-sheet
+       ============================================================== */
+    :root {
+      --accent: #d97435;            /* warm orange */
+      --accent-soft: rgba(217, 116, 53, 0.10);
+      --accent-tint: #fbeadd;
+      --accent-deep: #b85a1f;
+
+      --bg: #fdfcf9;
+      --bg-soft: #f5f2ec;
+      --bg-row: #faf8f3;
+      --panel: #ffffff;
+
+      --text: #161311;
+      --text-soft: #3a3633;
+      --muted: #797571;
+      --muted-2: #a39e98;
+
+      --border: #ebe7df;
+      --border-soft: #f1ede5;
+      --border-strong: #d8d3c9;
+
+      --pose-concrete: #d97435;
+      --pose-question: #6b8a3a;
+      --pose-counter:  #a8453a;
+      --pose-personal: #7a5cb5;
+      --pose-playful:  #c98a1f;
+
+      --sans: Inter, -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", "PingFang SC", sans-serif;
+      --serif: "Instrument Serif", Georgia, serif;
+      --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { padding: 0; margin: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: inherit; text-decoration: none; transition: opacity .15s ease, background .15s ease, transform .15s ease; }
+    a:hover { opacity: .85; }
+    img, svg { display: block; max-width: 100%; }
+    button { font: inherit; cursor: pointer; }
+    ::selection { background: var(--accent-tint); color: var(--text); }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      background: var(--bg);
+    }
+
+    /* ==============================================================
+       HEADER
+       ============================================================== */
+    header.bar {
+      padding: 20px 56px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: var(--accent);
+      display: grid;
+      place-items: center;
+    }
+    .brand-name { font-weight: 800; font-size: 17px; letter-spacing: -0.02em; }
+    .brand-name .ver {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted-2);
+      margin-left: 8px;
+      font-weight: 500;
+    }
+    .nav {
+      display: flex;
+      gap: 22px;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-soft);
+    }
+    .nav a { display: inline-flex; align-items: center; gap: 6px; }
+    .nav .lang {
+      display: inline-flex;
+      padding: 2px;
+      border-radius: 6px;
+      background: var(--border-soft);
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .nav .lang button {
+      padding: 4px 10px;
+      border: 0;
+      cursor: pointer;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--muted-2);
+      font: inherit;
+    }
+    .nav .lang button.active {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .download-btn {
+      padding: 9px 18px;
+      border-radius: 7px;
+      background: var(--accent);
+      color: #fff !important;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .download-btn:hover { background: var(--accent-deep); opacity: 1; }
+
+    /* ==============================================================
+       HERO
+       ============================================================== */
+    section.hero {
+      padding: 80px 56px 60px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 56px;
+      align-items: start;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      margin-bottom: 32px;
+    }
+    .hero-eyebrow .dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+    }
+    h1.hero-title {
+      font-size: 88px;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      font-weight: 800;
+      margin: 0 0 28px;
+    }
+    h1.hero-title .accent {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+    .hero-lede {
+      font-size: 17px;
+      color: var(--text-soft);
+      max-width: 460px;
+      margin-bottom: 32px;
+      line-height: 1.55;
+    }
+    .hero-ctas { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+    .hero-byline {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
+    .hero-byline .by-avatar {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e6c8a8, #8a6240);
+      flex-shrink: 0;
+    }
+    .hero-byline .by-avatar img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      display: block;
+    }
+    .hero-byline a {
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 1px dotted var(--border);
+    }
+    .hero-byline a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+    .btn-follow {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-follow:hover { border-color: var(--text); opacity: 1; }
+    .btn {
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-size: 14.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--text); color: #fff; }
+    .btn-primary:hover { opacity: 1; background: #000; }
+    .btn-primary .meta {
+      color: rgba(255,255,255,0.5);
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border-strong);
+      gap: 8px;
+    }
+
+    /* Hero panel card — replaces ShrinkMaster's result-card */
+    .panel-card {
+      background: #fff;
+      border: 1px solid var(--border-strong);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .panel-card-head {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .panel-card-head .live { color: var(--accent); }
+    .panel-card-head .live::before {
+      content: "● ";
+    }
+    .panel-tweet {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-soft);
+      background: var(--bg-row);
+    }
+    .panel-tweet-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+    .panel-tweet-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #d4a574, #8a6a4a);
+    }
+    .panel-tweet-handle {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .panel-tweet-handle .grey { color: var(--muted); font-weight: 400; margin-left: 4px; }
+    .panel-tweet-body {
+      font-size: 14px;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+    .panel-cards {
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+    .panel-card-item {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      transition: border-color .15s, background .15s;
+    }
+    .panel-card-item:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .panel-pose {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--pose-color, var(--accent));
+      padding-top: 2px;
+    }
+    .panel-pose.concrete { --pose-color: var(--pose-concrete); }
+    .panel-pose.question { --pose-color: var(--pose-question); }
+    .panel-pose.counter  { --pose-color: var(--pose-counter); }
+    .panel-pose.personal { --pose-color: var(--pose-personal); }
+    .panel-pose.playful  { --pose-color: var(--pose-playful); }
+    .panel-text {
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .panel-card-foot {
+      padding: 10px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+    }
+    .panel-card-foot .keys kbd {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: var(--mono);
+      font-size: 10px;
+      margin-right: 3px;
+      color: var(--text-soft);
+    }
+    .hero-spec-note {
+      margin-top: 14px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+      text-align: right;
+    }
+
+    /* ==============================================================
+       SECTION HEAD
+       ============================================================== */
+    .section {
+      padding: 100px 56px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section.bg-soft { background: var(--bg-soft); }
+    .section-head { max-width: 720px; margin-bottom: 56px; }
+    .section-head .eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-head h2 {
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin: 0;
+    }
+    .section-head h2 .serif {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    .section-head .lede {
+      font-size: 16px;
+      color: var(--text-soft);
+      margin-top: 16px;
+      line-height: 1.55;
+      max-width: 580px;
+    }
+
+    /* ==============================================================
+       EXAMPLES — tweet → 5 variants (custom for this product)
+       ============================================================== */
+    .examples-stack { display: grid; gap: 24px; }
+    .example {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .example-head {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-row);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: start;
+    }
+    .example-head-meta {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .example-tweet {
+      font-size: 15.5px;
+      line-height: 1.5;
+      color: var(--text);
+      max-width: 640px;
+    }
+    .example-tweet .handle {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-right: 8px;
+    }
+    .example-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 4px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .example-replies {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .example-reply {
+      padding: 18px 24px;
+      display: grid;
+      grid-template-columns: 92px 1fr;
+      gap: 16px;
+      border-top: 1px solid var(--border-soft);
+    }
+    .example-reply:nth-child(odd) { border-right: 1px solid var(--border-soft); }
+    .example-reply:nth-child(1), .example-reply:nth-child(2) { border-top: 0; }
+    .example-pose {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--pose-color, var(--accent));
+      padding-top: 2px;
+    }
+    .example-pose.concrete { --pose-color: var(--pose-concrete); }
+    .example-pose.question { --pose-color: var(--pose-question); }
+    .example-pose.counter  { --pose-color: var(--pose-counter); }
+    .example-pose.personal { --pose-color: var(--pose-personal); }
+    .example-pose.playful  { --pose-color: var(--pose-playful); }
+    .example-reply-text {
+      font-size: 14.5px;
+      color: var(--text);
+      line-height: 1.55;
+    }
+    .example-reply.full {
+      grid-column: 1 / -1;
+    }
+    /* Pose legend strip */
+    .pose-legend {
+      display: flex;
+      gap: 18px 28px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+      padding: 14px 20px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+    }
+    .pose-legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+    .pose-dot {
+      width: 9px; height: 9px; border-radius: 50%;
+      background: var(--pose-color, var(--accent));
+    }
+    .pose-legend-item.concrete .pose-dot { background: var(--pose-concrete); }
+    .pose-legend-item.question .pose-dot { background: var(--pose-question); }
+    .pose-legend-item.counter  .pose-dot { background: var(--pose-counter); }
+    .pose-legend-item.personal .pose-dot { background: var(--pose-personal); }
+    .pose-legend-item.playful  .pose-dot { background: var(--pose-playful); }
+    .pose-legend-item .label { font-weight: 600; color: var(--text); margin-right: 6px; letter-spacing: 0.04em; }
+
+    /* ==============================================================
+       FEATURES
+       ============================================================== */
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 56px;
+    }
+    .feature {
+      padding: 28px 0;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .feature .num {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted-2);
+      font-weight: 600;
+      padding-top: 4px;
+      min-width: 32px;
+    }
+    .feature h3 {
+      font-weight: 700;
+      font-size: 19px;
+      letter-spacing: -0.015em;
+      margin: 0 0 6px;
+    }
+    .feature p {
+      color: var(--text-soft);
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ==============================================================
+       USE CASES
+       ============================================================== */
+    .usecases-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .usecase {
+      padding: 28px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .usecase .tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      padding: 3px 9px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+      margin-bottom: 14px;
+    }
+    .usecase h3 {
+      font-weight: 700;
+      font-size: 19px;
+      letter-spacing: -0.015em;
+      margin: 0 0 6px;
+    }
+    .usecase p {
+      color: var(--text-soft);
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    /* ==============================================================
+       VS / COMPARISON
+       ============================================================== */
+    .vs-table {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .vs-head, .vs-row {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+      padding: 16px 24px;
+      align-items: center;
+    }
+    .vs-head {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-row);
+    }
+    .vs-head .col { text-align: center; }
+    .vs-head .col.sm { color: var(--accent); font-weight: 700; }
+    .vs-row + .vs-row { border-top: 1px solid var(--border-soft); }
+    .vs-row .label { font-weight: 600; font-size: 15px; }
+    .vs-row .cell { text-align: center; }
+    .check {
+      display: inline-grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--text);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .check.sm { background: var(--accent); }
+    .dash {
+      color: #cfcdc7;
+      font-family: var(--mono);
+      font-size: 18px;
+    }
+    .partial {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: #a07a00;
+      background: #fef3c7;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ==============================================================
+       INSTALL STEPS
+       ============================================================== */
+    .install-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    .install-step {
+      padding: 24px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+    }
+    .install-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted-2);
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+    .install-step h3 {
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: -0.01em;
+      margin: 0 0 8px;
+    }
+    .install-step p {
+      color: var(--text-soft);
+      font-size: 13.5px;
+      line-height: 1.55;
+      margin: 0;
+    }
+    .install-step code {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: var(--bg-soft);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--accent-deep);
+    }
+
+    /* ==============================================================
+       APP SHOT — the actual extension panel
+       ============================================================== */
+    .appshot-wrap { text-align: center; margin-bottom: 50px; }
+    .appshot-wrap .eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .appshot-wrap h2 {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      margin: 0;
+    }
+    .appshot-wrap h2 .serif {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    .appshot-stage { display: grid; place-items: center; }
+
+    /* Browser-window styled X page mockup */
+    .appshot {
+      width: 100%;
+      max-width: 920px;
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-strong);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 24px 48px rgba(15, 13, 10, 0.10);
+      font-family: var(--sans);
+    }
+    .appshot-titlebar {
+      height: 36px;
+      background: linear-gradient(180deg, #fafaf7, #f0ede6);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+    .appshot-titlebar .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .appshot-titlebar .dot.r { background: #ff5f57; }
+    .appshot-titlebar .dot.y { background: #febc2e; }
+    .appshot-titlebar .dot.g { background: #28c840; }
+    .appshot-titlebar .url {
+      flex: 1;
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.6);
+      border-radius: 5px;
+      padding: 3px 10px;
+      max-width: 360px;
+      margin: 0 auto;
+    }
+    .appshot-body {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      min-height: 480px;
+      background: #ffffff;
+    }
+    .appshot-x {
+      padding: 24px;
+      border-right: 1px solid var(--border);
+      background: #fff;
+    }
+    .appshot-x-tweet {
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    .appshot-x-tweet-head {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .appshot-x-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #cfa37a, #6e553a);
+    }
+    .appshot-x-handle { font-size: 13px; font-weight: 700; }
+    .appshot-x-handle .at { color: var(--muted); font-weight: 400; margin-left: 4px; font-size: 12px; }
+    .appshot-x-body { font-size: 14px; color: var(--text); line-height: 1.5; }
+    .appshot-x-composer {
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--accent-soft);
+      position: relative;
+    }
+    .appshot-x-composer-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent-deep);
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .appshot-x-composer-text {
+      font-size: 14px;
+      color: var(--muted);
+      min-height: 80px;
+    }
+    .appshot-x-composer-text .cursor {
+      display: inline-block;
+      width: 1.5px;
+      height: 16px;
+      background: var(--accent);
+      vertical-align: text-bottom;
+      animation: blink 1.1s infinite step-end;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .appshot-x-composer-arrow {
+      position: absolute;
+      right: -22px;
+      top: 28px;
+      width: 22px;
+      height: 2px;
+      background: var(--accent);
+    }
+    .appshot-x-composer-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -4px;
+      border-left: 8px solid var(--accent);
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+    }
+
+    /* The extension panel */
+    .appshot-panel {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+    .appshot-panel-head {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .appshot-panel-title {
+      font-weight: 800;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .appshot-panel-title .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+    }
+    .appshot-panel-regen {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .appshot-panel-intent {
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+    .appshot-panel-intent-input {
+      padding: 8px 10px;
+      background: var(--bg-soft);
+      border: 1px dashed var(--border-strong);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--sans);
+    }
+    .appshot-panel-list {
+      flex: 1;
+      padding: 12px;
+      display: grid;
+      gap: 7px;
+      align-content: start;
+    }
+    .appshot-panel-card {
+      padding: 10px 12px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      gap: 10px;
+      align-items: start;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .appshot-panel-card:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .appshot-panel-card .pose {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--pose-color, var(--accent));
+      padding-top: 1px;
+    }
+    .appshot-panel-card.concrete .pose { color: var(--pose-concrete); }
+    .appshot-panel-card.question .pose { color: var(--pose-question); }
+    .appshot-panel-card.counter  .pose { color: var(--pose-counter); }
+    .appshot-panel-card.personal .pose { color: var(--pose-personal); }
+    .appshot-panel-card.playful  .pose { color: var(--pose-playful); }
+    .appshot-panel-card .text {
+      font-size: 12.5px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+    .appshot-panel-foot {
+      padding: 10px 18px;
+      border-top: 1px solid var(--border);
+      background: #fff;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--muted-2);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* ==============================================================
+       MAKER / ABOUT
+       ============================================================== */
+    .maker {
+      max-width: 820px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 32px;
+      align-items: center;
+      padding: 32px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .maker-portrait {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      overflow: hidden;
+      box-shadow: 0 0 0 2px rgba(217, 116, 53, 0.25);
+      background: linear-gradient(135deg, #e6c8a8, #8a6240);
+    }
+    .maker-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 22%;
+      display: block;
+    }
+    .maker-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .maker-name { font-size: 19px; font-weight: 700; margin-bottom: 8px; }
+    .maker-bio {
+      color: var(--text-soft);
+      font-size: 14.5px;
+      line-height: 1.65;
+      margin: 0 0 14px;
+      max-width: 540px;
+    }
+    .maker-actions { display: flex; gap: 8px; }
+    .pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pill-btn.outline { background: #fff; color: var(--text); border: 1px solid var(--border-strong); }
+    .pill-btn.filled { background: var(--accent); color: #fff; }
+    .pill-btn.filled:hover { background: var(--accent-deep); opacity: 1; }
+
+    /* ==============================================================
+       FAQ
+       ============================================================== */
+    .faq-wrap { max-width: 820px; margin: 0 auto; }
+    .faq-item { border-top: 1px solid var(--border); padding: 20px 0; }
+    .faq-item:last-child { border-bottom: 1px solid var(--border); }
+    .faq-item summary {
+      list-style: none;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 17px;
+      letter-spacing: -0.005em;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary .qnum {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted-2);
+      margin-right: 14px;
+    }
+    .faq-item .plus {
+      transition: transform 0.2s ease;
+      flex-shrink: 0;
+      color: var(--text);
+    }
+    .faq-item[open] .plus { transform: rotate(45deg); }
+    .faq-body {
+      margin-top: 12px;
+      color: var(--text-soft);
+      font-size: 14.5px;
+      line-height: 1.7;
+      padding-left: 50px;
+      max-width: 660px;
+    }
+
+    /* ==============================================================
+       FINAL CTA (dark)
+       ============================================================== */
+    section.cta {
+      padding: 120px 56px;
+      background: var(--text);
+      color: #fafaf7;
+      text-align: center;
+    }
+    section.cta h2 {
+      font-size: 56px;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      font-weight: 800;
+      margin: 0 0 18px;
+    }
+    section.cta h2 .serif {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      color: var(--accent);
+    }
+    section.cta .lede {
+      color: rgba(250, 250, 247, 0.6);
+      font-size: 17px;
+      max-width: 540px;
+      margin: 0 auto 30px;
+    }
+    section.cta .ctas { display: inline-flex; gap: 10px; }
+    section.cta .btn { padding: 15px 24px; border-radius: 8px; font-size: 14.5px; font-weight: 700; gap: 9px; }
+    section.cta .btn.primary { background: var(--accent); color: #fff; }
+    section.cta .btn.primary:hover { background: var(--accent-deep); opacity: 1; }
+    section.cta .btn.ghost {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fafaf7;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+    section.cta .terminal {
+      margin-top: 36px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: rgba(250, 250, 247, 0.4);
+      letter-spacing: 0.04em;
+    }
+
+    /* ==============================================================
+       FOOTER
+       ============================================================== */
+    footer.foot {
+      background: var(--text);
+      color: rgba(250, 250, 247, 0.6);
+      padding: 60px 64px 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .foot-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 40px;
+      margin-bottom: 44px;
+    }
+    .foot-brand p {
+      margin-top: 14px;
+      color: rgba(250, 250, 247, 0.45);
+      font-size: 13.5px;
+      max-width: 280px;
+      line-height: 1.55;
+    }
+    .foot-brand .brand-name { color: #fafaf7; }
+    .foot-brand .brand-name .ver { color: rgba(250, 250, 247, 0.4); }
+    .foot-col h6 {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(250, 250, 247, 0.4);
+      margin-bottom: 14px;
+    }
+    .foot-col ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+    .foot-col a { color: rgba(250, 250, 247, 0.7); font-size: 13.5px; }
+    .foot-bottom {
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 22px;
+      font-family: var(--mono);
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      color: rgba(250, 250, 247, 0.4);
+    }
+
+    /* ==============================================================
+       CJK overrides (ported from ShrinkMaster)
+       ============================================================== */
+    html[lang="zh-CN"] .serif,
+    html[lang="zh"] .serif {
+      font-family: inherit;
+      font-style: normal;
+      font-weight: inherit;
+      letter-spacing: inherit;
+    }
+    html[lang="zh-CN"] h1.hero-title .accent,
+    html[lang="zh"] h1.hero-title .accent {
+      font-family: inherit;
+      font-style: normal;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    html[lang="zh-CN"] h1.hero-title,
+    html[lang="zh"] h1.hero-title {
+      letter-spacing: -0.02em;
+      font-size: 76px;
+    }
+    html[lang="zh-CN"] .section-head h2,
+    html[lang="zh"] .section-head h2,
+    html[lang="zh-CN"] .appshot-wrap h2,
+    html[lang="zh"] .appshot-wrap h2,
+    html[lang="zh-CN"] section.cta h2,
+    html[lang="zh"] section.cta h2 {
+      letter-spacing: -0.015em;
+    }
+    /* Chinese titles: keep each <span> as one inseparable unit so titles
+       only break between spans, never mid-phrase. */
+    html[lang="zh-CN"] .section-head h2 span,
+    html[lang="zh"] .section-head h2 span,
+    html[lang="zh-CN"] .appshot-wrap h2 span,
+    html[lang="zh"] .appshot-wrap h2 span,
+    html[lang="zh-CN"] section.cta h2 span,
+    html[lang="zh"] section.cta h2 span {
+      display: inline-block;
+      white-space: nowrap;
+    }
+    html[lang="zh-CN"] .section-head h2 span:empty,
+    html[lang="zh"] .section-head h2 span:empty,
+    html[lang="zh-CN"] .appshot-wrap h2 span:empty,
+    html[lang="zh"] .appshot-wrap h2 span:empty,
+    html[lang="zh-CN"] section.cta h2 span:empty,
+    html[lang="zh"] section.cta h2 span:empty {
+      display: none;
+    }
+
+    /* ==============================================================
+       Responsive
+       ============================================================== */
+    @media (max-width: 1040px) {
+      header.bar, .section, section.hero, section.cta, footer.foot {
+        padding-left: 28px;
+        padding-right: 28px;
+      }
+      section.hero { grid-template-columns: 1fr; gap: 40px; padding-top: 56px; padding-bottom: 40px; }
+      h1.hero-title { font-size: 56px; }
+      html[lang="zh-CN"] h1.hero-title, html[lang="zh"] h1.hero-title { font-size: 50px; }
+      .features-grid, .usecases-grid, .install-grid { grid-template-columns: 1fr; }
+      .install-grid { gap: 12px; }
+      .features-grid .feature { border-top: 1px solid var(--border); }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .nav { gap: 14px; }
+      .nav .nav-link, .nav .nav-icon-link { display: none; }
+      .section-head h2, .appshot-wrap h2, section.cta h2 { font-size: 36px; }
+      .vs-head, .vs-row { padding-left: 14px; padding-right: 14px; }
+      .vs-head { font-size: 10px; }
+      .example-replies { grid-template-columns: 1fr; }
+      .example-reply:nth-child(odd) { border-right: 0; }
+      .example-reply:nth-child(2) { border-top: 1px solid var(--border-soft); }
+      .appshot-body { grid-template-columns: 1fr; min-height: 0; }
+      .appshot-x { border-right: 0; border-bottom: 1px solid var(--border); }
+      .appshot-x-composer-arrow { display: none; }
+      .maker { grid-template-columns: 1fr; text-align: center; padding: 28px 22px; }
+      .maker-portrait { margin: 0 auto; }
+      .maker-actions { justify-content: center; }
+    }
+    @media (max-width: 560px) {
+      h1.hero-title { font-size: 44px; }
+      html[lang="zh-CN"] h1.hero-title, html[lang="zh"] h1.hero-title { font-size: 40px; }
+      .vs-head, .vs-row { grid-template-columns: 1.4fr repeat(4, 1fr); font-size: 12px; }
+      .vs-head { font-size: 9px; }
+      .foot-grid { grid-template-columns: 1fr; }
+      .pose-legend { gap: 10px 18px; }
+      .example-head { grid-template-columns: 1fr; }
+      .example-reply { grid-template-columns: 1fr; gap: 6px; }
+    }
+  </style>
 </head>
 <body>
-<a class="skip" href="#content">Skip to content</a>
+  <div class="page">
 
-<header class="nav">
-  <a class="brand" href="/">
-    <svg class="brand-icon" viewBox="0 0 128 128" aria-hidden="true">
-      <rect width="128" height="128" rx="20" fill="#1d9bf0"/>
-      <path d="M 22 30 Q 22 22 30 22 L 98 22 Q 106 22 106 30 L 106 80 Q 106 88 98 88 L 60 88 L 42 106 L 48 88 L 30 88 Q 22 88 22 80 Z" fill="#ffffff"/>
-      <circle cx="46" cy="55" r="6.5" fill="#1d9bf0"/>
-      <circle cx="64" cy="55" r="6.5" fill="#1d9bf0"/>
-      <circle cx="82" cy="55" r="6.5" fill="#1d9bf0"/>
-    </svg>
-    <span>X Reply Helper</span>
-  </a>
-  <nav class="nav-links">
-    <a href="#features">Features</a>
-    <a href="#install">Install</a>
-    <a href="#privacy">Privacy</a>
-    <a href="https://github.com/kellypeng/x-reply-helper" target="_blank" rel="noopener">GitHub</a>
-  </nav>
-</header>
-
-<main id="content">
-  <section class="hero">
-    <h1>5 reply ideas, every tweet, in your voice.</h1>
-    <p class="lead">A Chrome extension that drops 5 distinct reply variants into a panel the moment you focus an X (Twitter) reply box. Bring your own LLM key. Free and open source.</p>
-    <div class="cta">
-      <a class="btn btn-primary" href="https://github.com/kellypeng/x-reply-helper/releases/latest">
-        Install — Free
+    <!-- ============== HEADER ============== -->
+    <header class="bar">
+      <a href="#" class="brand">
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+          </svg>
+        </div>
+        <div class="brand-name">X Reply Helper<span class="ver">v0.4</span></div>
       </a>
-      <a class="btn btn-secondary" href="https://github.com/kellypeng/x-reply-helper" target="_blank" rel="noopener">
-        View on GitHub
-      </a>
-    </div>
-    <p class="hero-note">Bilingual (English + 中文). MIT licensed. No tracking.</p>
-  </section>
+      <nav class="nav">
+        <a href="#examples" class="nav-link" data-i18n="nav.examples">Examples</a>
+        <a href="#features" class="nav-link" data-i18n="nav.features">Features</a>
+        <a href="#install" class="nav-link" data-i18n="nav.install">Install</a>
+        <a href="#faq" class="nav-link" data-i18n="nav.faq">FAQ</a>
+        <a href="https://twitter.com/kellyyuweipeng" class="nav-icon-link" rel="noopener">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Twitter
+        </a>
+        <a href="https://github.com/kellyyuweipeng/x-reply-helper" class="nav-icon-link" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.67.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+          GitHub
+        </a>
+        <div class="lang" role="tablist" aria-label="Language">
+          <button data-lang="en" class="active" type="button">EN</button>
+          <button data-lang="zh" type="button">中</button>
+        </div>
+        <a href="https://github.com/kellyyuweipeng/x-reply-helper/releases/latest" class="download-btn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="nav.install_btn">Install</span>
+        </a>
+      </nav>
+    </header>
 
-  <section class="preview" aria-label="Panel preview">
-    <div class="preview-frame">
-      <div class="preview-tweet">
-        <div class="preview-tweet-head">
-          <div class="preview-avatar"></div>
+    <!-- ============== HERO ============== -->
+    <section class="hero">
+      <div>
+        <div class="hero-eyebrow">
+          <span class="dot"></span>
+          <span data-i18n="hero.eyebrow">Chrome · MV3 · bring your own LLM · MIT</span>
+        </div>
+        <h1 class="hero-title">
+          <span data-i18n="hero.title1">Five takes.</span><br>
+          <span class="accent" data-i18n="hero.title2">Every tweet.</span>
+        </h1>
+        <p class="hero-lede" data-i18n="hero.lede">A free Chrome extension that drops 5 distinct reply variants into a panel the moment you focus an X reply box. Bring your own LLM key. 100% local. Open source.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="https://github.com/kellyyuweipeng/x-reply-helper/releases/latest">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span data-i18n="hero.cta1">Install for Chrome</span>
+            <span class="meta">· zip, 84 KB</span>
+          </a>
+          <a class="btn btn-secondary" href="https://github.com/kellyyuweipeng/x-reply-helper">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.67.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+            <span data-i18n="hero.cta2">Star on GitHub</span>
+          </a>
+          <a class="btn btn-follow" href="https://twitter.com/kellyyuweipeng">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <span data-i18n="hero.cta3">Follow @kellyyuweipeng</span>
+          </a>
+        </div>
+        <div class="hero-byline">
+          <span class="by-avatar"><img src="kelly-portrait.jpg" alt="" /></span>
+          <span data-i18n="hero.byline">Built by</span>&nbsp;<a href="https://twitter.com/kellyyuweipeng" data-i18n="hero.byname">Kelly Peng</a>
+        </div>
+      </div>
+
+      <!-- Hero spec card: tweet + 5 reply variants -->
+      <div>
+        <div class="panel-card">
+          <div class="panel-card-head">
+            <span data-i18n="hero.panel.url">x.com/kellyyuweipeng/status/1857…</span>
+            <span class="live" data-i18n="hero.panel.live">live</span>
+          </div>
+          <div class="panel-tweet">
+            <div class="panel-tweet-meta">
+              <div class="panel-tweet-avatar"></div>
+              <div class="panel-tweet-handle">@kellyyuweipeng<span class="grey" data-i18n="hero.panel.time">· 2h</span></div>
+            </div>
+            <div class="panel-tweet-body" data-i18n="hero.panel.tweet">AI is making solo founders more productive than ever.</div>
+          </div>
+          <div class="panel-cards">
+            <div class="panel-card-item">
+              <span class="panel-pose concrete" data-i18n="pose.concrete">Concrete</span>
+              <div class="panel-text" data-i18n="hero.panel.r1">the gap between "idea" and "shipped" has never been smaller</div>
+            </div>
+            <div class="panel-card-item">
+              <span class="panel-pose question" data-i18n="pose.question">Question</span>
+              <div class="panel-text" data-i18n="hero.panel.r2">curious what your favorite use case has been so far</div>
+            </div>
+            <div class="panel-card-item">
+              <span class="panel-pose counter" data-i18n="pose.counter">Counter</span>
+              <div class="panel-text" data-i18n="hero.panel.r3">depends what you're shipping — customer trust still takes the same amount of time</div>
+            </div>
+            <div class="panel-card-item">
+              <span class="panel-pose personal" data-i18n="pose.personal">Personal</span>
+              <div class="panel-text" data-i18n="hero.panel.r4">finally doesn't feel like you need to hire people just to test an idea</div>
+            </div>
+            <div class="panel-card-item">
+              <span class="panel-pose playful" data-i18n="pose.playful">Playful</span>
+              <div class="panel-text" data-i18n="hero.panel.r5">solo founder = me, myself, and 4 AI agents</div>
+            </div>
+          </div>
+          <div class="panel-card-foot">
+            <span data-i18n="hero.panel.model">claude-haiku-4-5 · 1.2s</span>
+            <span class="keys"><kbd>↑↓</kbd> <kbd>↵</kbd> <span data-i18n="hero.panel.insert">insert</span></span>
+          </div>
+        </div>
+        <div class="hero-spec-note" data-i18n="hero.panel.note">* representative output, default settings</div>
+      </div>
+    </section>
+
+    <!-- ============== EXAMPLES ============== -->
+    <section id="examples" class="section">
+      <div class="section-head">
+        <div class="eyebrow"><span data-i18n="demo.eyebrow">▎ The headline pattern</span></div>
+        <h2>
+          <span data-i18n="demo.title1">One tweet.</span>
+          <span class="serif" data-i18n="demo.title2">Five honest angles.</span>
+        </h2>
+        <p class="lede" data-i18n="demo.lede">Every reply takes a different stance, so you actually have something to choose from — not five rephrasings of the same agreeable nothing.</p>
+      </div>
+
+      <!-- Pose legend -->
+      <div class="pose-legend">
+        <div class="pose-legend-item concrete">
+          <span class="pose-dot"></span>
+          <span class="label" data-i18n="pose.concrete">Concrete</span>
+          <span data-i18n="pose.concrete.def">a sharp specific take</span>
+        </div>
+        <div class="pose-legend-item question">
+          <span class="pose-dot"></span>
+          <span class="label" data-i18n="pose.question">Question</span>
+          <span data-i18n="pose.question.def">an honest ask</span>
+        </div>
+        <div class="pose-legend-item counter">
+          <span class="pose-dot"></span>
+          <span class="label" data-i18n="pose.counter">Counter</span>
+          <span data-i18n="pose.counter.def">a respectful disagree</span>
+        </div>
+        <div class="pose-legend-item personal">
+          <span class="pose-dot"></span>
+          <span class="label" data-i18n="pose.personal">Personal</span>
+          <span data-i18n="pose.personal.def">your own experience</span>
+        </div>
+        <div class="pose-legend-item playful">
+          <span class="pose-dot"></span>
+          <span class="label" data-i18n="pose.playful">Playful</span>
+          <span data-i18n="pose.playful.def">a one-liner</span>
+        </div>
+      </div>
+
+      <div class="examples-stack">
+        <!-- Example 1 -->
+        <article class="example">
+          <div class="example-head">
+            <div>
+              <div class="example-head-meta" data-i18n="ex.1.meta">EXAMPLE · ENGLISH · GENERAL TIMELINE</div>
+              <div class="example-tweet">
+                <span class="handle">@paulg</span>
+                <span data-i18n="ex.1.tweet">"Don't try to make your product perfect. Try to make it useful."</span>
+              </div>
+            </div>
+            <span class="example-tag" data-i18n="ex.1.tag">advice tweet</span>
+          </div>
+          <div class="example-replies">
+            <div class="example-reply">
+              <span class="example-pose concrete" data-i18n="pose.concrete">Concrete</span>
+              <div class="example-reply-text" data-i18n="ex.1.r1">"perfect" is a feeling about you, "useful" is a fact about the user</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose question" data-i18n="pose.question">Question</span>
+              <div class="example-reply-text" data-i18n="ex.1.r2">do you think this changes once you have paying customers, or is it the same forever</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose counter" data-i18n="pose.counter">Counter</span>
+              <div class="example-reply-text" data-i18n="ex.1.r3">at some point "useful but rough" stops being charming and starts losing trust though</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose personal" data-i18n="pose.personal">Personal</span>
+              <div class="example-reply-text" data-i18n="ex.1.r4">spent 6 weeks polishing a feature nobody opened. learned this one the expensive way</div>
+            </div>
+            <div class="example-reply full">
+              <span class="example-pose playful" data-i18n="pose.playful">Playful</span>
+              <div class="example-reply-text" data-i18n="ex.1.r5">my project: ✅ useful, ❌ perfect, ⚠️ unreviewed since 2023</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Example 2 -->
+        <article class="example">
+          <div class="example-head">
+            <div>
+              <div class="example-head-meta" data-i18n="ex.2.meta">EXAMPLE · ENGLISH · TECH</div>
+              <div class="example-tweet">
+                <span class="handle">@dhh</span>
+                <span data-i18n="ex.2.tweet">"Most engineering managers should just go back to writing code."</span>
+              </div>
+            </div>
+            <span class="example-tag" data-i18n="ex.2.tag">hot take</span>
+          </div>
+          <div class="example-replies">
+            <div class="example-reply">
+              <span class="example-pose concrete" data-i18n="pose.concrete">Concrete</span>
+              <div class="example-reply-text" data-i18n="ex.2.r1">half the meetings exist because the manager isn't allowed to ship anymore</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose question" data-i18n="pose.question">Question</span>
+              <div class="example-reply-text" data-i18n="ex.2.r2">what do you think breaks first at scale — the IC manager, or the team underneath?</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose counter" data-i18n="pose.counter">Counter</span>
+              <div class="example-reply-text" data-i18n="ex.2.r3">good managers do real work, it just doesn't show up in git log. unblocking 8 people > shipping 1 feature</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose personal" data-i18n="pose.personal">Personal</span>
+              <div class="example-reply-text" data-i18n="ex.2.r4">went IC → manager → IC. happiest in the IC phases. some of us just shouldn't be doing this</div>
+            </div>
+            <div class="example-reply full">
+              <span class="example-pose playful" data-i18n="pose.playful">Playful</span>
+              <div class="example-reply-text" data-i18n="ex.2.r5">my manager reads this then schedules a 1:1 to discuss</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Example 3 — bilingual showcase -->
+        <article class="example">
+          <div class="example-head">
+            <div>
+              <div class="example-head-meta" data-i18n="ex.3.meta">EXAMPLE · CHINESE TWEET → CHINESE REPLIES</div>
+              <div class="example-tweet">
+                <span class="handle">@indiedev_zh</span>
+                <span data-i18n="ex.3.tweet">"做独立开发者最难的不是写代码，而是接受一个产品可能永远没人用。"</span>
+              </div>
+            </div>
+            <span class="example-tag" data-i18n="ex.3.tag">bilingual</span>
+          </div>
+          <div class="example-replies">
+            <div class="example-reply">
+              <span class="example-pose concrete" data-i18n="pose.concrete">Concrete</span>
+              <div class="example-reply-text" data-i18n="ex.3.r1">没人用其实有信号——比如朋友夸完不分享，那就是不够痛</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose question" data-i18n="pose.question">Question</span>
+              <div class="example-reply-text" data-i18n="ex.3.r2">你觉得是「写代码 100 小时 + 找用户 1 小时」的比例问题吗</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose counter" data-i18n="pose.counter">Counter</span>
+              <div class="example-reply-text" data-i18n="ex.3.r3">最难的其实是接受自己写得很烂——没人用反而是结果</div>
+            </div>
+            <div class="example-reply">
+              <span class="example-pose personal" data-i18n="pose.personal">Personal</span>
+              <div class="example-reply-text" data-i18n="ex.3.r4">第一个产品做了 8 个月零用户，但学到的东西足够支撑后面三年</div>
+            </div>
+            <div class="example-reply full">
+              <span class="example-pose playful" data-i18n="pose.playful">Playful</span>
+              <div class="example-reply-text" data-i18n="ex.3.r5">独立开发者三件套：野心、咖啡、和一个永远没人用的产品</div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============== FEATURES ============== -->
+    <section id="features" class="section bg-soft">
+      <div class="section-head">
+        <div class="eyebrow"><span data-i18n="features.eyebrow">▎ What it does</span></div>
+        <h2>
+          <span data-i18n="features.title1">Built for the way</span>
+          <span class="serif" data-i18n="features.title2">creators actually reply.</span>
+        </h2>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature">
+          <div class="num">01</div>
           <div>
-            <div class="preview-name">@somefounder</div>
-            <div class="preview-handle">replying to a tweet…</div>
+            <h3 data-i18n="features.f1.title">Five poses, every time</h3>
+            <p data-i18n="features.f1.body">Concrete, Question, Counter, Personal, Playful. Each suggestion takes a different angle, so you always have real variety to pick from — not five rephrasings of the same thing.</p>
           </div>
         </div>
-        <div class="preview-tweet-body">AI is making solo founders more productive than ever.</div>
-        <div class="preview-composer">Tweet your reply</div>
-      </div>
-
-      <div class="preview-panel">
-        <div class="preview-header">
-          <span>Reply ideas</span>
-          <span class="preview-regen">Regenerate</span>
-        </div>
-        <div class="preview-intent">
-          <div class="preview-intent-input">想表达什么？(可选, 中英文都行, 回车提交)</div>
-        </div>
-        <div class="preview-cards">
-          <div class="preview-card">
-            <div class="preview-pose">Concrete</div>
-            <div class="preview-text">The gap between idea and shipped has never been smaller</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-pose">Question</div>
-            <div class="preview-text">Wonder what your favorite use case has been so far</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-pose">Counter</div>
-            <div class="preview-text">depends what you're shipping, customer trust still takes the same amount of time</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-pose">Personal</div>
-            <div class="preview-text">finally doesn't feel like you need to hire people just to test an idea</div>
-          </div>
-          <div class="preview-card">
-            <div class="preview-pose">Playful</div>
-            <div class="preview-text">solo founder = me, myself, and 4 AI agents</div>
+        <div class="feature">
+          <div class="num">02</div>
+          <div>
+            <h3 data-i18n="features.f2.title">Type your angle, get phrasing</h3>
+            <p data-i18n="features.f2.body">Have an idea but stuck on how to phrase it? Type it in any language. Get 4 native English variants of <em>your</em> idea — short, sentence, playful, or echoing the original.</p>
           </div>
         </div>
-        <div class="preview-credit">
-          Made by <span class="preview-link">@kellyyuweipeng</span>
+        <div class="feature">
+          <div class="num">03</div>
+          <div>
+            <h3 data-i18n="features.f3.title">Bring your own LLM</h3>
+            <p data-i18n="features.f3.body">Anthropic, OpenAI, Kimi, Zhipu GLM. Use whichever provider you already pay for — or want to try. Switch any time. Each key remembered separately.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="num">04</div>
+          <div>
+            <h3 data-i18n="features.f4.title">In your voice, over time</h3>
+            <p data-i18n="features.f4.body">Every reply you actually click into the composer gets remembered locally. Suggestions drift toward your real voice the more you use it.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="num">05</div>
+          <div>
+            <h3 data-i18n="features.f5.title">100% local. No telemetry.</h3>
+            <p data-i18n="features.f5.body">Your API key stays on your machine. No analytics, no server, no phone-home. Just you and the LLM provider you chose.</p>
+          </div>
+        </div>
+        <div class="feature">
+          <div class="num">06</div>
+          <div>
+            <h3 data-i18n="features.f6.title">Bilingual by default</h3>
+            <p data-i18n="features.f6.body">English tweet → English reply. Chinese tweet → Chinese reply. Detected client-side via script analysis — not by asking the model to guess.</p>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="features" id="features">
-    <h2>What it does</h2>
-    <div class="features-grid">
-      <div class="feature">
-        <div class="feature-icon">5</div>
-        <h3>Five poses, every time</h3>
-        <p>Each suggestion takes a different angle: Concrete, Question, Counter, Personal, Playful. So you always have real variety to pick from, not five rephrasings of the same thing.</p>
+    <!-- ============== USE CASES ============== -->
+    <section id="use-cases" class="section">
+      <div class="section-head">
+        <div class="eyebrow"><span data-i18n="useCases.eyebrow">▎ Where it shines</span></div>
+        <h2>
+          <span data-i18n="useCases.title1">For the moments</span>
+          <span class="serif" data-i18n="useCases.title2">your reply box hates.</span>
+        </h2>
       </div>
-      <div class="feature">
-        <div class="feature-icon">✎</div>
-        <h3>Type your angle, get phrasing</h3>
-        <p>Have an idea but stuck on how to phrase it in English? Type it in any language. Get 4 native English variants of <em>your</em> idea — short, sentence, playful, or echoing the original tweet.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⚡</div>
-        <h3>Bring your own LLM</h3>
-        <p>Anthropic, OpenAI, Kimi, Zhipu GLM. Use whichever provider you already pay for, or want to try. Switch any time. Each key remembered separately.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⊙</div>
-        <h3>In your voice, over time</h3>
-        <p>Every reply you actually click into the composer gets remembered locally. The suggestions drift toward your real voice the more you use it.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">⚿</div>
-        <h3>Privacy-first</h3>
-        <p>Your API key stays on your machine. No telemetry, no analytics, no server. Just you and the provider you chose.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon">中</div>
-        <h3>Bilingual</h3>
-        <p>English tweet → English reply. Chinese tweet → Chinese reply. Detected via JS-side script analysis, not by asking the model to guess.</p>
-      </div>
-    </div>
-  </section>
 
-  <section class="install" id="install">
-    <h2>Install in 60 seconds</h2>
-    <ol class="steps">
-      <li>
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h3>Download the zip</h3>
-          <p>Grab <code>x-reply-helper-vX.Y.Z.zip</code> from the <a href="https://github.com/kellypeng/x-reply-helper/releases/latest" target="_blank" rel="noopener">latest Release</a>, then unzip it somewhere you'll keep around (e.g. <code>~/Applications/x-reply-helper/</code>).</p>
+      <div class="usecases-grid">
+        <div class="usecase">
+          <span class="tag" data-i18n="useCases.u1.tag">stuck staring</span>
+          <h3 data-i18n="useCases.u1.title">"I have nothing to say"</h3>
+          <p data-i18n="useCases.u1.body">You like the tweet but the box is blank. Five angles let you find the one you actually agree with — not the first thing that came to mind.</p>
         </div>
-      </li>
-      <li>
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h3>Load it into Chrome</h3>
-          <p>Open <code>chrome://extensions</code>, toggle <strong>Developer mode</strong> on (top right), click <strong>Load unpacked</strong>, and pick the unzipped folder.</p>
+        <div class="usecase">
+          <span class="tag" data-i18n="useCases.u2.tag">non-native</span>
+          <h3 data-i18n="useCases.u2.title">Replying in a second language</h3>
+          <p data-i18n="useCases.u2.body">You know exactly what you want to say in Chinese. Type it. Get four native English phrasings that don't read like translation.</p>
         </div>
-      </li>
-      <li>
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <h3>Add an API key</h3>
-          <p>Click the new toolbar icon. Pick a provider (Zhipu GLM has a free tier — easiest entry point), paste your key, save.</p>
+        <div class="usecase">
+          <span class="tag" data-i18n="useCases.u3.tag">building audience</span>
+          <h3 data-i18n="useCases.u3.title">Showing up in 50 reply boxes a day</h3>
+          <p data-i18n="useCases.u3.body">Engagement is volume. The tool removes the activation cost so you can actually leave thoughtful replies on the accounts you care about.</p>
         </div>
-      </li>
-      <li>
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <h3>Open X and reply</h3>
-          <p>Click any tweet's reply box. The panel pops up with 5 suggestions. Click a card to insert it.</p>
+        <div class="usecase">
+          <span class="tag" data-i18n="useCases.u4.tag">don't want to sound AI</span>
+          <h3 data-i18n="useCases.u4.title">Sounding like you, not GPT</h3>
+          <p data-i18n="useCases.u4.body">No em-dashes, no "Great point!", no LinkedIn voice. The variants are short, lowercase, opinionated — like a real reply guy with taste.</p>
         </div>
-      </li>
-    </ol>
-    <p class="install-note">Not on the Chrome Web Store yet — early personal tool. Source is fully open if you want to audit before installing.</p>
-  </section>
+      </div>
+    </section>
 
-  <section class="privacy" id="privacy">
-    <h2>Privacy</h2>
-    <ul class="privacy-list">
-      <li><strong>Your key never leaves your machine</strong> beyond the LLM provider's API endpoint when generating a reply.</li>
-      <li><strong>No telemetry, no analytics, no server.</strong> The extension is static client code; there is no backend to phone home to.</li>
-      <li><strong>The tweet you're replying to + any angle you type</strong> goes to the LLM provider you selected. Each provider has its own data-handling policy; consult theirs.</li>
-      <li><strong>Picked replies are stored locally only</strong> (capped at 50 entries) for voice calibration. Never leaves your machine.</li>
-    </ul>
-  </section>
+    <!-- ============== VS / COMPARISON ============== -->
+    <section class="section bg-soft">
+      <div class="section-head">
+        <div class="eyebrow"><span data-i18n="vs.eyebrow">▎ How it compares</span></div>
+        <h2>
+          <span data-i18n="vs.title1">Why not just use</span>
+          <span class="serif" data-i18n="vs.title2">ChatGPT in another tab?</span>
+        </h2>
+      </div>
 
-  <section class="about">
-    <h2>About</h2>
-    <p>Built by <a href="https://x.com/kellyyuweipeng" target="_blank" rel="noopener">Kelly Peng</a>, an indie creator on X. This is one of a handful of small tools I'm making for X creators who want to engage more without losing their own voice.</p>
-    <p>Found a bug or want a feature? <a href="https://github.com/kellypeng/x-reply-helper/issues" target="_blank" rel="noopener">Open an issue</a> or DM me on X.</p>
-  </section>
-</main>
+      <div class="vs-table">
+        <div class="vs-head">
+          <span></span>
+          <span class="col sm" data-i18n="vs.col.sm">Reply Helper</span>
+          <span class="col" data-i18n="vs.col.chat">ChatGPT tab</span>
+          <span class="col" data-i18n="vs.col.grok">Grok</span>
+          <span class="col" data-i18n="vs.col.manual">Writing manually</span>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r1">In the reply box, no copy-paste</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r2">5 different angles, not 1 answer</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="partial">if asked</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r3">Your API key, your model</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r4">Learns your voice over time</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r5">Bilingual EN ↔ 中</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+          <div class="cell"><span class="partial">English-leaning</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r6">Free &amp; open source</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+        </div>
+        <div class="vs-row">
+          <div class="label" data-i18n="vs.r7">Zero data leaves your machine</div>
+          <div class="cell"><span class="check sm">✓</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="dash">—</span></div>
+          <div class="cell"><span class="check">✓</span></div>
+        </div>
+      </div>
+    </section>
 
-<footer class="footer">
-  <div>
-    <a href="https://github.com/kellypeng/x-reply-helper" target="_blank" rel="noopener">GitHub</a>
-    ·
-    <a href="https://github.com/kellypeng/x-reply-helper/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
-    ·
-    <a href="https://x.com/kellyyuweipeng" target="_blank" rel="noopener">@kellyyuweipeng</a>
+    <!-- ============== APP SHOT ============== -->
+    <section class="section">
+      <div class="appshot-wrap">
+        <div class="eyebrow" data-i18n="appshot.eyebrow">▎ The panel</div>
+        <h2>
+          <span data-i18n="appshot.title1">Focus the reply box.</span><br>
+          <span class="serif" data-i18n="appshot.title2">The panel is already there.</span>
+        </h2>
+      </div>
+      <div class="appshot-stage">
+        <div class="appshot">
+          <div class="appshot-titlebar">
+            <span class="dot r"></span>
+            <span class="dot y"></span>
+            <span class="dot g"></span>
+            <span class="url">x.com/kellyyuweipeng/status/1857...</span>
+          </div>
+          <div class="appshot-body">
+            <div class="appshot-x">
+              <div class="appshot-x-tweet">
+                <div class="appshot-x-tweet-head">
+                  <div class="appshot-x-avatar"></div>
+                  <div class="appshot-x-handle">kellyyuweipeng<span class="at">@kellyyuweipeng · 2h</span></div>
+                </div>
+                <div class="appshot-x-body" data-i18n="hero.panel.tweet">AI is making solo founders more productive than ever.</div>
+              </div>
+              <div class="appshot-x-composer">
+                <div class="appshot-x-composer-label" data-i18n="appshot.composer">▎ REPLY · FOCUSED</div>
+                <div class="appshot-x-composer-text">
+                  <span class="cursor"></span>
+                </div>
+                <div class="appshot-x-composer-arrow"></div>
+              </div>
+            </div>
+
+            <div class="appshot-panel">
+              <div class="appshot-panel-head">
+                <div class="appshot-panel-title">
+                  <span class="dot"></span>
+                  <span data-i18n="appshot.panel.title">Reply ideas</span>
+                </div>
+                <div class="appshot-panel-regen">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                  <span data-i18n="appshot.panel.regen">regenerate</span>
+                </div>
+              </div>
+              <div class="appshot-panel-intent">
+                <div class="appshot-panel-intent-input" data-i18n="appshot.panel.intent">想表达什么？(可选, 中英文都行, 回车提交)</div>
+              </div>
+              <div class="appshot-panel-list">
+                <div class="appshot-panel-card concrete">
+                  <span class="pose" data-i18n="pose.concrete">Concrete</span>
+                  <div class="text" data-i18n="hero.panel.r1">the gap between "idea" and "shipped" has never been smaller</div>
+                </div>
+                <div class="appshot-panel-card question">
+                  <span class="pose" data-i18n="pose.question">Question</span>
+                  <div class="text" data-i18n="hero.panel.r2">curious what your favorite use case has been so far</div>
+                </div>
+                <div class="appshot-panel-card counter">
+                  <span class="pose" data-i18n="pose.counter">Counter</span>
+                  <div class="text" data-i18n="hero.panel.r3">depends what you're shipping — customer trust still takes the same amount of time</div>
+                </div>
+                <div class="appshot-panel-card personal">
+                  <span class="pose" data-i18n="pose.personal">Personal</span>
+                  <div class="text" data-i18n="hero.panel.r4">finally doesn't feel like you need to hire people just to test an idea</div>
+                </div>
+                <div class="appshot-panel-card playful">
+                  <span class="pose" data-i18n="pose.playful">Playful</span>
+                  <div class="text" data-i18n="hero.panel.r5">solo founder = me, myself, and 4 AI agents</div>
+                </div>
+              </div>
+              <div class="appshot-panel-foot">
+                <span data-i18n="hero.panel.model">claude-haiku-4-5 · 1.2s</span>
+                <span data-i18n="appshot.panel.foot">↑↓ to navigate · ↵ to insert</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== INSTALL ============== -->
+    <section id="install" class="section bg-soft">
+      <div class="section-head">
+        <div class="eyebrow"><span data-i18n="install.eyebrow">▎ Install</span></div>
+        <h2>
+          <span data-i18n="install.title1">Up and running</span>
+          <span class="serif" data-i18n="install.title2">in 60 seconds.</span>
+        </h2>
+        <p class="lede" data-i18n="install.lede">Not on the Chrome Web Store yet — early personal tool. Source is fully open if you want to audit before installing.</p>
+      </div>
+
+      <div class="install-grid">
+        <div class="install-step">
+          <div class="install-num">STEP 01</div>
+          <h3 data-i18n="install.s1.title">Download the zip</h3>
+          <p data-i18n="install.s1.body">Grab <code>x-reply-helper.zip</code> from the latest GitHub Release. Unzip somewhere you'll keep it.</p>
+        </div>
+        <div class="install-step">
+          <div class="install-num">STEP 02</div>
+          <h3 data-i18n="install.s2.title">Load unpacked</h3>
+          <p data-i18n="install.s2.body">Open <code>chrome://extensions</code>, toggle <strong>Developer mode</strong>, click <strong>Load unpacked</strong>, pick the folder.</p>
+        </div>
+        <div class="install-step">
+          <div class="install-num">STEP 03</div>
+          <h3 data-i18n="install.s3.title">Add an API key</h3>
+          <p data-i18n="install.s3.body">Click the toolbar icon. Pick a provider — Zhipu GLM has a free tier — paste your key, save.</p>
+        </div>
+        <div class="install-step">
+          <div class="install-num">STEP 04</div>
+          <h3 data-i18n="install.s4.title">Open X and reply</h3>
+          <p data-i18n="install.s4.body">Click any tweet's reply box. The panel is already there with 5 suggestions. Click a card to insert.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== MAKER ============== -->
+    <section class="section">
+      <div class="maker">
+        <div class="maker-portrait"><img src="kelly-portrait.jpg" alt="Kelly Peng" /></div>
+        <div>
+          <div class="maker-eyebrow" data-i18n="about.eyebrow">Builder · Indie · Reply guy</div>
+          <div class="maker-name" data-i18n="about.name">Kelly Peng</div>
+          <p class="maker-bio" data-i18n="about.bio">I built X Reply Helper because I wanted to engage more on X without sounding like a chatbot or wasting 90 seconds staring at a blank reply box. I'm bilingual and a slow writer in English, so the &quot;type your angle in any language, get native English phrasing&quot; flow is the part I use most. One of a handful of small tools I'm making for X creators.</p>
+          <div class="maker-actions">
+            <a class="pill-btn outline" href="https://twitter.com/kellyyuweipeng">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              <span data-i18n="about.follow">Follow on X</span>
+            </a>
+            <a class="pill-btn filled" href="https://github.com/kellyyuweipeng">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.67.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+              <span data-i18n="about.other">Other tools</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== FAQ ============== -->
+    <section id="faq" class="section bg-soft">
+      <div class="section-head">
+        <div class="eyebrow"><span data-i18n="faq.eyebrow">▎ Frequently asked</span></div>
+        <h2>
+          <span data-i18n="faq.title1">Questions you'd</span>
+          <span class="serif" data-i18n="faq.title2">probably ask first.</span>
+        </h2>
+      </div>
+
+      <div class="faq-wrap">
+        <details class="faq-item" open>
+          <summary>
+            <span><span class="qnum">Q.01</span><span data-i18n="faq.q1.q">Does my data leave my machine?</span></span>
+            <span class="plus">+</span>
+          </summary>
+          <div class="faq-body" data-i18n="faq.q1.a">Only what you send to your LLM provider when generating a reply: the original tweet plus any angle you typed. The extension itself has no backend, no analytics, no telemetry. Your API key, your settings, and the replies you've picked all stay in local browser storage.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span><span class="qnum">Q.02</span><span data-i18n="faq.q2.q">Which LLM providers can I use?</span></span>
+            <span class="plus">+</span>
+          </summary>
+          <div class="faq-body" data-i18n="faq.q2.a">Anthropic (Claude), OpenAI, Kimi (Moonshot), and Zhipu GLM. Each key is stored separately so you can switch providers without retyping. Zhipu has a free tier — easiest entry point if you don't already pay for one.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span><span class="qnum">Q.03</span><span data-i18n="faq.q3.q">Will the replies sound like AI?</span></span>
+            <span class="plus">+</span>
+          </summary>
+          <div class="faq-body" data-i18n="faq.q3.a">The system prompt is tuned hard against AI tropes — no em-dashes, no "Great point!", no LinkedIn voice. Replies are short, lowercase, and opinionated by default. As you actually click variants into the composer, the model gets a few of them as voice samples on the next call, so it drifts toward you.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span><span class="qnum">Q.04</span><span data-i18n="faq.q4.q">How does bilingual detection work?</span></span>
+            <span class="plus">+</span>
+          </summary>
+          <div class="faq-body" data-i18n="faq.q4.a">Client-side script analysis: count Han characters, count Latin characters, pick the dominant. The model is then asked to reply in that language. Works even on mixed-language tweets — it picks whichever script the tweet leans toward.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span><span class="qnum">Q.05</span><span data-i18n="faq.q5.q">Why not just put it on the Chrome Web Store?</span></span>
+            <span class="plus">+</span>
+          </summary>
+          <div class="faq-body" data-i18n="faq.q5.a">Eventually. For now it's a personal tool I share with friends, and the Web Store review process for "modifies X.com" extensions is non-trivial. Loading unpacked from the GitHub release is faster and lets you read the source first.</div>
+        </details>
+
+        <details class="faq-item">
+          <summary>
+            <span><span class="qnum">Q.06</span><span data-i18n="faq.q6.q">Will it work on the X mobile app?</span></span>
+            <span class="plus">+</span>
+          </summary>
+          <div class="faq-body" data-i18n="faq.q6.a">No — Chrome extensions only run on desktop browsers. It works on x.com in any Chromium-based desktop browser (Chrome, Arc, Brave, Edge).</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ============== FINAL CTA ============== -->
+    <section class="cta">
+      <h2>
+        <span data-i18n="cta.t1">Stop staring at the box.</span><br>
+        <span class="serif" data-i18n="cta.t2">Start replying.</span>
+      </h2>
+      <p class="lede" data-i18n="cta.lede">Free, open source, runs on your own LLM key. Install in a minute, uninstall in a second.</p>
+      <div class="ctas">
+        <a class="btn primary" href="https://github.com/kellyyuweipeng/x-reply-helper/releases/latest">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span data-i18n="cta.btn1">Install for Chrome</span>
+        </a>
+        <a class="btn ghost" href="https://github.com/kellyyuweipeng/x-reply-helper">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.87-1.54-3.87-1.54-.52-1.32-1.27-1.67-1.27-1.67-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.69 1.25 3.34.96.1-.74.4-1.25.72-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.89-.39s1.97.13 2.89.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.76.11 3.05.74.8 1.18 1.83 1.18 3.09 0 4.42-2.69 5.4-5.25 5.68.41.36.78 1.06.78 2.13 0 1.54-.01 2.78-.01 3.16 0 .31.21.67.8.56C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"/></svg>
+          <span data-i18n="cta.btn2">Read the source</span>
+        </a>
+      </div>
+      <div class="terminal" data-i18n="cta.terminal">$ git clone github.com/kellyyuweipeng/x-reply-helper</div>
+    </section>
+
+    <!-- ============== FOOTER ============== -->
+    <footer class="foot">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <div class="brand">
+            <div class="brand-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+              </svg>
+            </div>
+            <div class="brand-name">X Reply Helper<span class="ver">v0.4</span></div>
+          </div>
+          <p data-i18n="foot.tagline">Five takes, every tweet, in your voice. A small tool for X creators who want to show up more without losing how they sound.</p>
+        </div>
+        <div class="foot-col">
+          <h6 data-i18n="foot.col1.title">Product</h6>
+          <ul>
+            <li><a href="#examples" data-i18n="nav.examples">Examples</a></li>
+            <li><a href="#features" data-i18n="nav.features">Features</a></li>
+            <li><a href="#install" data-i18n="nav.install">Install</a></li>
+            <li><a href="#faq" data-i18n="nav.faq">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h6 data-i18n="foot.col2.title">Source</h6>
+          <ul>
+            <li><a href="https://github.com/kellyyuweipeng/x-reply-helper">GitHub</a></li>
+            <li><a href="https://github.com/kellyyuweipeng/x-reply-helper/releases">Releases</a></li>
+            <li><a href="https://github.com/kellyyuweipeng/x-reply-helper/issues" data-i18n="foot.issues">Issues</a></li>
+            <li><a href="https://github.com/kellyyuweipeng/x-reply-helper/blob/main/LICENSE">MIT License</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h6 data-i18n="foot.col3.title">Maker</h6>
+          <ul>
+            <li><a href="https://twitter.com/kellyyuweipeng">@kellyyuweipeng</a></li>
+            <li><a href="https://github.com/kellyyuweipeng" data-i18n="foot.other">Other tools</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <span>© 2026 Kelly Peng · MIT</span>
+        <span data-i18n="foot.note">Built solo. No tracking. No server.</span>
+      </div>
+    </footer>
+
   </div>
-  <div class="footer-credit">© Kelly Peng</div>
-</footer>
 
+  <!-- ============== I18N ============== -->
+  <script>
+    const I18N = {
+      en: {}, // English is the source — strings live in markup
+      zh: {
+        "nav.examples": "示例",
+        "nav.features": "功能",
+        "nav.install": "安装",
+        "nav.faq": "FAQ",
+        "nav.install_btn": "安装",
+
+        "hero.eyebrow": "Chrome 扩展 · 自带 LLM key · MIT 开源",
+        "hero.title1": "每条推，",
+        "hero.title2": "五种回法。",
+        "hero.lede": "点开 X 的回复框，5 条不同角度的回复就在旁边。免费、开源，用你自己的 LLM key 跑在本地。",
+        "hero.cta1": "下载安装",
+        "hero.cta2": "在 GitHub 上 Star",
+        "hero.cta3": "关注 @kellyyuweipeng",
+        "hero.byline": "作者",
+        "hero.byname": "凯莉彭",
+
+        "hero.panel.url": "x.com/kellyyuweipeng/status/1857…",
+        "hero.panel.live": "在线",
+        "hero.panel.time": "· 2 小时",
+        "hero.panel.tweet": "AI 让独立创业者比以往任何时候都能打。",
+        "hero.panel.r1": "从「想到」到「上线」之间，距离从来没这么短过",
+        "hero.panel.r2": "你最爽的使用场景是哪个？想听听",
+        "hero.panel.r3": "看做的是什么吧，客户的信任还是得慢慢攒",
+        "hero.panel.r4": "终于不用为了验证一个想法先去招个人了",
+        "hero.panel.r5": "独立创业者 = 我自己 + 4 个 AI 打工人",
+        "hero.panel.model": "claude-haiku-4-5 · 1.2s",
+        "hero.panel.insert": "插入",
+        "hero.panel.note": "* 默认配置下的实际输出",
+
+        "pose.concrete": "具体",
+        "pose.question": "提问",
+        "pose.counter": "反驳",
+        "pose.personal": "个人",
+        "pose.playful": "玩梗",
+        "pose.concrete.def": "一个具体的点",
+        "pose.question.def": "顺势问一句",
+        "pose.counter.def": "礼貌不同意",
+        "pose.personal.def": "聊聊自己",
+        "pose.playful.def": "玩个梗",
+
+        "demo.eyebrow": "▎ 怎么用",
+        "demo.title1": "同一条推，",
+        "demo.title2": "五种回法。",
+        "demo.lede": "每条都换一个角度，让你真的有得挑——不是同一句废话改 5 遍。",
+
+        "ex.1.meta": "示例 · 英文推 · 通用",
+        "ex.1.tweet": "「别想着把产品做完美。先把它做得有用。」",
+        "ex.1.tag": "鸡汤金句",
+        "ex.1.r1": "「完美」是你自己的感觉，「有用」是用户的事实",
+        "ex.1.r2": "你觉得有了付费用户之后这话还成立吗",
+        "ex.1.r3": "但「有用但糙」过了某个阶段就不可爱了，会开始掉信任",
+        "ex.1.r4": "上次为了一个没人点的功能磨了 6 周。这堂课交了不少学费",
+        "ex.1.r5": "我的项目：✅ 有用、❌ 完美、⚠️ 2023 之后没维护过",
+
+        "ex.2.meta": "示例 · 英文推 · 科技圈",
+        "ex.2.tweet": "「大多数工程经理都该回去写代码。」",
+        "ex.2.tag": "暴论",
+        "ex.2.r1": "一半的会议之所以存在，是因为经理不被允许写代码了",
+        "ex.2.r2": "规模上来之后先崩的是经理本人，还是底下的团队？",
+        "ex.2.r3": "好经理也在干活，只是不会出现在 git log 里。给 8 个人解决问题 > 自己写一个功能",
+        "ex.2.r4": "我 IC → 经理 → 又转回 IC。还是 IC 那段最爽。有些人就不适合管人",
+        "ex.2.r5": "我经理看到这条之后约了我 1:1 来聊",
+
+        "ex.3.meta": "示例 · 中文推 → 中文回复",
+        "ex.3.tweet": "「做独立开发者最难的不是写代码，而是接受一个产品可能永远没人用。」",
+        "ex.3.tag": "双语",
+        "ex.3.r1": "没人用其实是有信号的——朋友夸完不转发，就是还不够痛",
+        "ex.3.r2": "你觉得是不是「100 小时写代码 + 1 小时找用户」的比例出了问题",
+        "ex.3.r3": "我觉得最难的是承认自己写得不够好，没人用反而只是结果",
+        "ex.3.r4": "我第一个产品做了 8 个月零用户，但学到的东西够我吃后面三年",
+        "ex.3.r5": "独立开发三件套：野心、咖啡、一个永远没人用的产品",
+
+        "features.eyebrow": "▎ 能做什么",
+        "features.title1": "顺着你的发推习惯设计。",
+        "features.title2": "",
+        "features.f1.title": "5 种风格，每次都有",
+        "features.f1.body": "具体、提问、反驳、个人、玩梗——5 条建议各走各的角度，让你能真的挑一个，而不是面对 5 句换汤不换药的废话。",
+        "features.f2.title": "想法是中文的也没关系",
+        "features.f2.body": "知道想说什么但卡在英文怎么说？随便用什么语言写进去，会得到 4 种地道英文表达——短句、整句、玩梗、或者顺着原推接。",
+        "features.f3.title": "用你自己的 LLM",
+        "features.f3.body": "Anthropic、OpenAI、Kimi、智谱 GLM，用哪个都行。已经在付的、想试试的，随时切。每家的 key 分开存。",
+        "features.f4.title": "用着用着就像你",
+        "features.f4.body": "你真的点进回复框的那些回复会被记在本地。用得越多，建议越像你说话的样子。",
+        "features.f5.title": "100% 本地，不上传",
+        "features.f5.body": "API key 不出你电脑。没有统计、没有服务器、没有回传——你和你选的 LLM 之间没有第三方。",
+        "features.f6.title": "中英都行",
+        "features.f6.body": "英文推就回英文，中文推就回中文。前端脚本判断的，不是丢给模型猜。",
+
+        "useCases.eyebrow": "▎ 什么时候用",
+        "useCases.title1": "专治盯着回复框发呆。",
+        "useCases.title2": "",
+        "useCases.u1.tag": "想不到话",
+        "useCases.u1.title": "「我也不知道说啥」",
+        "useCases.u1.body": "推文挺有意思但回复框是空的。5 个不同角度里总有一个是你真的想说的——比脑子里冒出来的第一句靠谱。",
+        "useCases.u2.tag": "非母语",
+        "useCases.u2.title": "想用英文回但卡壳",
+        "useCases.u2.body": "中文里你清楚要说什么。打进去，拿到 4 种不像翻译腔的地道英文。",
+        "useCases.u3.tag": "做账号",
+        "useCases.u3.title": "一天要在 50 个回复框出现",
+        "useCases.u3.body": "互动靠的是量。这个工具把启动成本砍掉，让你真的能在那些你在意的人下面好好回一句。",
+        "useCases.u4.tag": "不想像 AI",
+        "useCases.u4.title": "听着像你，不像 ChatGPT",
+        "useCases.u4.body": "没有破折号、没有「说得真好！」、没有 LinkedIn 腔。给的建议都是短的、有态度的——像一个真实的、有点品位的网友。",
+
+        "vs.eyebrow": "▎ 横向比较",
+        "vs.title1": "那不如直接开个 ChatGPT？",
+        "vs.title2": "",
+        "vs.col.sm": "Reply Helper",
+        "vs.col.chat": "ChatGPT 标签页",
+        "vs.col.grok": "Grok",
+        "vs.col.manual": "自己写",
+        "vs.r1": "在回复框旁边直接出，不用复制粘贴",
+        "vs.r2": "一次给 5 个角度，不是 1 个答案",
+        "vs.r3": "自己的 key、自己选的模型",
+        "vs.r4": "会学你的语气",
+        "vs.r5": "中英都行",
+        "vs.r6": "免费 + 开源",
+        "vs.r7": "数据不出本机",
+
+        "appshot.eyebrow": "▎ 长这样",
+        "appshot.title1": "点开回复框，",
+        "appshot.title2": "面板就在那。",
+        "appshot.composer": "▎ 回复框 · 已聚焦",
+        "appshot.panel.title": "回复建议",
+        "appshot.panel.regen": "重新生成",
+        "appshot.panel.intent": "想表达什么？(可选, 中英文都行, 回车提交)",
+        "appshot.panel.foot": "↑↓ 切换 · ↵ 插入",
+
+        "install.eyebrow": "▎ 装一下",
+        "install.title1": "一分钟装好。",
+        "install.title2": "",
+        "install.lede": "还没上 Chrome 商店，目前是个自用的小工具。代码全开源，想看可以先翻代码再装。",
+        "install.s1.title": "下载 zip",
+        "install.s1.body": "去最新的 GitHub Release 下 <code>x-reply-helper.zip</code>，解压到一个不会删的位置。",
+        "install.s2.title": "Chrome 加载",
+        "install.s2.body": "打开 <code>chrome://extensions</code>，右上角打开 <strong>开发者模式</strong>，点 <strong>加载已解压的扩展程序</strong>，选刚解压的文件夹。",
+        "install.s3.title": "填 API key",
+        "install.s3.body": "点工具栏上的图标。选一个 provider，智谱 GLM 有免费额度，最容易上手。粘 key，保存。",
+        "install.s4.title": "去 X 试试",
+        "install.s4.body": "随便点开一条推的回复框，5 个建议就在旁边了。点哪个就插哪个。",
+
+        "about.name": "凯莉彭",
+        "about.eyebrow": "作者 · 独立开发者 · 科技博主",
+        "about.bio": "做这个是因为我自己想在 X 上多发声，但不想听起来像聊天机器人，也不想为了一句回复盯着空白框发呆 90 秒。我是双语，英文写起来比中文慢，所以「想法用任何语言写出来 → 拿到地道英文表达」这个流程是我用得最多的。这是我给 X 上的创作者做的一系列小工具之一。",
+        "about.follow": "在 X 关注我",
+        "about.other": "看看其他工具",
+
+        "faq.eyebrow": "▎ 常见问题",
+        "faq.title1": "你大概会先想问的几个。",
+        "faq.title2": "",
+        "faq.q1.q": "我的数据会被传走吗？",
+        "faq.q1.a": "只有生成回复的时候，原推文加上你打的那段话会发给你自己选的 LLM 服务商。除此之外没有后端、没有统计、没有任何上传。API key、设置、你点过的回复都只在你浏览器本地。",
+        "faq.q2.q": "支持哪些 LLM？",
+        "faq.q2.a": "Anthropic（Claude）、OpenAI、Kimi（月之暗面）、智谱 GLM。每家的 key 分开存，切来切去不用重填。如果你还没付费，智谱有免费额度，从这个起最简单。",
+        "faq.q3.q": "回复看起来会很 AI 吗？",
+        "faq.q3.a": "system prompt 专门针对 AI 腔做了优化——不用破折号、不出「说得太好了！」、没有 LinkedIn 那一套。默认就是短的、小写的、有态度的。你真的点进回复框的那些会作为下次调用的样本，所以越用越像你。",
+        "faq.q4.q": "中英是怎么判断的？",
+        "faq.q4.a": "前端脚本数字符：汉字多少个、拉丁字母多少个，谁多就用谁。然后让模型用对应语言回。即使是中英混排的推文也走这个逻辑。",
+        "faq.q5.q": "为啥不直接上架 Chrome 商店？",
+        "faq.q5.a": "之后会上。目前还是自己和朋友在用的小工具，而商店对「修改 X.com 内容」这种扩展的审核挺麻烦。从 GitHub 直接装更快，也方便你先翻一下源码。",
+        "faq.q6.q": "手机上能用吗？",
+        "faq.q6.a": "不能。Chrome 扩展只在桌面浏览器里跑。x.com 在桌面端的 Chromium 浏览器（Chrome、Arc、Brave、Edge）都可以。",
+
+        "cta.t1": "别再盯着回复框了，",
+        "cta.t2": "开始发声。",
+        "cta.lede": "免费、开源、用你自己的 LLM key。一分钟装好，一秒钟卸载。",
+        "cta.btn1": "安装到 Chrome",
+        "cta.btn2": "查看源代码",
+        "cta.terminal": "$ git clone github.com/kellyyuweipeng/x-reply-helper",
+
+        "foot.tagline": "五种回复，每一条推文，都用你的语气。一个为想多发声但不愿失去自己声音的 X 创作者做的小工具。",
+        "foot.col1.title": "产品",
+        "foot.col2.title": "源代码",
+        "foot.col3.title": "作者",
+        "foot.issues": "提 issue",
+        "foot.other": "其他工具",
+        "foot.note": "独立开发。无追踪。无服务器。"
+      }
+    };
+
+    // Snapshot original English strings on first load
+    const enSnapshot = new Map();
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      enSnapshot.set(el, el.innerHTML);
+    });
+
+    function applyLang(lang) {
+      const dict = I18N[lang] || {};
+      document.querySelectorAll('[data-i18n]').forEach((el) => {
+        const key = el.getAttribute('data-i18n');
+        if (lang === 'en') {
+          if (enSnapshot.has(el)) el.innerHTML = enSnapshot.get(el);
+        } else if (dict[key] != null) {
+          el.innerHTML = dict[key];
+        } else if (enSnapshot.has(el)) {
+          el.innerHTML = enSnapshot.get(el);
+        }
+      });
+      document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
+      document.querySelectorAll('.lang button').forEach((b) => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
+      try { localStorage.setItem('xrh.lang', lang); } catch (e) {}
+    }
+
+    document.querySelectorAll('.lang button').forEach((b) => {
+      b.addEventListener('click', () => applyLang(b.getAttribute('data-lang')));
+    });
+
+    let initial = 'en';
+    try {
+      const saved = localStorage.getItem('xrh.lang');
+      if (saved === 'en' || saved === 'zh') initial = saved;
+      else if ((navigator.language || '').toLowerCase().startsWith('zh')) initial = 'zh';
+    } catch (e) {}
+    applyLang(initial);
+  </script>
 </body>
 </html>
