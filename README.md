@@ -1,122 +1,173 @@
-# X (Twitter) Reply Helper
+<div align="center">
 
-<img src="icons/icon-128.png" width="64" align="right" alt="">
+<img src="docs/favicon.svg" width="84" height="84" alt="X Reply Helper logo" />
 
-**English** | [中文](README.zh-CN.md)
+# X Reply Helper
 
-🌐 **Live demo:** [x-reply-helper.kellypeng.com](https://x-reply-helper.kellypeng.com)
+**A free Chrome extension that helps you reply on X (Twitter). Click into any reply box, pick from 5 suggestions, you're done.**
 
-A free Chrome extension that suggests 5 reply ideas the moment you focus an X (Twitter) reply box. Pick one, and it's typed into the box for you — in your own voice.
+[**↓ Download for Chrome**](https://github.com/kellypeng/x-reply-helper/releases/latest) · [Visit website](https://x-reply-helper.kellypeng.com) · [Follow on X](https://twitter.com/kellyyuweipeng)
+
+[English](README.md) · [中文](README.zh-CN.md)
+
+</div>
 
 ---
 
-## What this does
+## What it does
 
-You're scrolling X. You see a tweet you'd like to reply to. You start typing — and the words just don't come.
+X Reply Helper sits beside the X (Twitter) reply box and gives you **5 ready-made reply suggestions** the moment you focus it. Each suggestion takes a different angle. You read them, click the one closest to what you'd say, and it's typed into the reply box for you.
 
-This extension fixes that.
+A typical example:
 
-The moment you click into any X reply box, a small panel pops up next to it with **5 ready-made reply suggestions**, each from a different angle. Read them, click the one closest to what you'd say, and it's typed into the reply box for you.
+> A tweet says *"AI is making solo founders more productive than ever."* You click into the reply box. The panel pops up with 5 takes — a specific point, a question, a polite counter, a personal experience, a playful one-liner. Pick whichever sounds like you.
 
-It's especially useful if:
+That's the whole product. Click reply box → pick a take → hit Reply. About 10 seconds.
 
-- **English isn't your first language.** You know what you want to say, but you don't know how to say it like a native.
-- **You're not naturally chatty online.** You don't have an instinct for "what makes a good reply".
-- **You're short on time.** You don't have 5 minutes to draft a reply.
+## What problem it solves
 
-## What you get
+You probably ran into one of these recently:
 
-- **5 different angles every time** — not 5 versions of the same thing. Each suggestion takes a different stance: a specific point, an honest question, a polite disagreement, a personal experience, a playful one-liner. So you actually have something to choose from.
-- **Type your own idea, get it phrased for you.** Have a thought but stuck on how to say it in English? Type it in any language (English, Chinese, half-half, anything). The extension writes it as 4 natural English variants.
-- **Replies match the tweet's language.** English tweet → English reply. Chinese tweet → Chinese reply. Detected automatically.
-- **Replies sound like you, not a robot.** Every reply you actually click gets remembered locally. Future suggestions drift toward your real voice the more you use it.
-- **Free, open source, runs on your computer.** No subscription, no servers, no tracking. You just need your own AI key (one-time setup, see below).
+- 🥶 **Empty-reply-box paralysis.** You start typing, the words won't come, you close the tab.
+- 🌍 **You know what you want to say — in Chinese.** But you don't know how to say it like a native English speaker.
+- ⏰ **No time to draft three versions.** You don't have 5 minutes for a reply.
+- 🤖 **The "ChatGPT in another tab" dance is clunky.** You copy the tweet, paste, ask for ideas, copy back — your flow breaks.
+- 💭 **Disagree without sounding like a jerk.** Every draft sounds either too soft or too combative.
+- 📉 **You want to engage more, but every reply feels generic.** "Great point!" "100%!" "This!"
 
-## Install (about 60 seconds)
+X Reply Helper fixes all of those by giving you 5 different stances every time, in your own voice, without leaving the X tab.
 
-1. **Download** the `.zip` file from the [latest release page](https://github.com/kellypeng/x-reply-helper/releases/latest) — it's the file named `x-reply-helper-vX.Y.Z.zip`.
-2. **Unzip it** to a folder you'll keep around (anywhere works, e.g. `Documents/x-reply-helper/`).
-3. **Open Chrome** and type this in the address bar: `chrome://extensions`
-4. **Turn on "Developer mode"** (top right corner). This is normal — it's how you install extensions that aren't yet on the Chrome Web Store.
-5. **Click "Load unpacked"** and pick the folder you just unzipped.
-6. **Done.** A small blue chat-bubble icon will appear in your Chrome toolbar.
+## How to install
 
-> **Why not on the Chrome Web Store?** It's coming. For now this is the developer install path. Source code is fully public — feel free to read every line before installing.
+### Step 1 — Download
 
-## Set up your AI key (one-time, ~2 minutes)
+[**↓ Download X Reply Helper**](https://github.com/kellypeng/x-reply-helper/releases/latest) — grab the file named `x-reply-helper-vX.Y.Z.zip` from the latest release.
 
-The extension needs an AI key to actually generate replies. You bring your own — that's why the tool stays free.
+Unzip it to a folder you'll keep around. Anywhere works — `Documents/x-reply-helper/` is fine.
+
+### Step 2 — Load it into Chrome
+
+Open Chrome and paste this into the address bar: `chrome://extensions`
+
+Then:
+
+1. **Turn on "Developer mode"** (top right corner).
+2. Click **"Load unpacked"**.
+3. Pick the folder you just unzipped.
+
+A small blue chat-bubble icon will appear in your Chrome toolbar.
+
+> **About "Developer mode":** this is normal. It's just how Chrome installs extensions that aren't on the Web Store yet. The source code for X Reply Helper is fully public — you can read every line right here on GitHub before installing. Web Store listing will come later.
+
+### Step 3 — Add an AI key
+
+X Reply Helper needs an AI provider to actually generate replies. You bring your own key — that's why the tool stays free.
 
 1. Click the **blue chat-bubble icon** in your Chrome toolbar.
-2. **Pick a provider** from the dropdown (see table below to choose).
-3. **Paste your API key** in the box, then click **Save**.
+2. Pick a provider. Most people should start with **Zhipu GLM** (free) or **Anthropic Claude** (best quality).
+3. Click the link in the popup to sign up at that provider, copy your API key, paste it back into the popup, and click **Save**.
 
-### Which provider should I pick?
+That's it — you're set up.
 
-| Provider | Best if you... | Free option? |
-|---|---|---|
-| **Zhipu GLM** (智谱) | Are in mainland China, want to start free | ✓ Free tier — easiest start |
-| **Kimi** (月之暗面) | Want the best Chinese reply quality | ✓ Free tier with limits |
-| **OpenAI** | Already pay for ChatGPT API | ❌ Requires payment |
-| **Anthropic** (Claude) | Want the highest reply quality | ❌ Requires payment |
+## How to use
 
-Each provider's signup link is shown right inside the popup — click it, sign up, copy your key, paste it back.
+**Click into any reply box on X (Twitter).** The panel pops up at the bottom-right with 5 reply suggestions, each from a different angle:
 
-> **What is an "API key" anyway?** It's like an entry pass to talk to an AI. The extension uses your key to ask the AI for reply suggestions. By using your own key, you only pay for what you actually use (often nothing — most providers have free tiers), and your data stays between you and the provider you chose.
+- **Concrete** — a specific point or fact
+- **Question** — an honest follow-up question
+- **Counter** — a respectful disagreement
+- **Personal** — your own experience
+- **Playful** — a witty one-liner
 
-## How to use it
+**Click any of the 5 suggestions** — it gets typed into the reply box for you. Then hit Reply on X like normal.
 
-1. Go to **x.com** (or twitter.com).
-2. **Click into any reply box** under any tweet.
-3. **A panel pops up at the bottom-right** with 5 reply suggestions, each from a different angle:
-   - **Concrete** — a specific point or fact
-   - **Question** — an honest follow-up question
-   - **Counter** — a respectful disagreement
-   - **Personal** — your own experience
-   - **Playful** — a witty one-liner
-4. **Click any of the 5** — that reply gets typed into the X reply box for you.
-5. Want a different set of suggestions? Click **Regenerate** at the top of the panel.
+That's the whole flow. Click reply box. Pick a take. Reply.
 
-### Want a reply with your own angle?
+### Useful things to know
 
-Type what you want to say in the small box at the top of the panel — in any language. Press **Enter**. You'll get 4 polished variants of *your* idea, in the right language.
+- **Want a reply with your own angle?** Type your idea into the small box at the top of the panel — in any language. Press **Enter**. You'll get 4 polished variants of *your* idea, in the right language.
+- **Don't like the 5 suggestions?** Click **Regenerate** at the top of the panel for a fresh set.
+- **Languages match automatically**: English tweet → English reply, Chinese tweet → Chinese reply. Detected automatically — you don't toggle anything.
+- **It learns your voice**: every reply you actually click gets remembered locally. Future suggestions drift toward your real voice the more you use it.
+- **Switch AI providers anytime**: each provider's key is stored separately. Open the popup, pick a different provider, save. Your other keys are still there.
+- **Close the panel**: press `Esc`, click outside it, or click the **×** in the top right.
+- **Your originals are safe**: the extension only inserts text into the reply box. It never sends a tweet for you. You always click Reply yourself.
 
-### To close the panel
+## Common questions
 
-Press **Esc**, click outside the panel, or click the **×** in the top right corner.
+**Is it really free?**
+Yes. Free to download, free to use, free forever. The code is on GitHub under an open-source license. The only thing that costs money is the AI provider you choose — and most providers (Zhipu, Kimi) have a free tier that's plenty for everyday X use.
 
-## Privacy
+**Does X Reply Helper send my data anywhere?**
+The tool itself has no server, no analytics, no tracking — it's just static code running in your browser. The tweet you're replying to (plus any angle you type) goes to the **AI provider you chose** when generating a reply. That's the only network call. Your API key, settings, and reply history all stay on your computer.
 
-Plain English version:
+**Why do I need an API key?**
+The extension needs to talk to an AI to generate replies. The API key is your "entry pass" to that AI. By using your own key, you only pay for what you use (often nothing, on free tiers), and your data stays between you and the provider you picked. It also means I don't need to run any servers, which is what keeps the tool free.
 
-- ✅ Your API key **never leaves your computer** — except when going to the AI provider you chose (only when generating a reply).
-- ✅ The tweet you're replying to + any angle you type **goes to the AI provider you selected** — that's how replies get generated.
-- ✅ The replies you actually click are **saved locally on your computer** so suggestions get more "you" over time. They never leave your machine.
-- ✅ The extension has **no server, no analytics, no tracking** of any kind.
-- ✅ Want to wipe the saved reply history? Open the extension's developer console and run `chrome.storage.local.remove('pickHistory')`. Or just remove and reinstall the extension.
+**What if the 5 suggestions don't fit what I want to say?**
+Type your own idea into the small box at the top of the panel — in any language — and hit Enter. You'll get 4 polished variants of *your* idea instead of 5 generic angles. Or just click Regenerate for a fresh set of 5.
 
-Each AI provider has its own privacy policy — read theirs if you care about how they handle the text you send them.
+**How is this different from just using ChatGPT?**
+ChatGPT is a chat window in another tab. You'd have to: copy the tweet, paste it, type "give me reply ideas", read paragraphs, copy a reply, switch tabs, paste, edit. X Reply Helper is a panel that already knows the tweet, gives you 5 distinct takes (not 5 versions of the same take), and clicks straight into the reply box. The whole flow is 3 seconds instead of 60.
 
-## Help / Questions
+**Will the replies sound generic?**
+The first few might. The extension remembers every reply you actually clicked and feeds the recent ones back into the system prompt — so the more you use it, the more the suggestions sound like *you* specifically, not "average Twitter user".
 
-- Found a bug or want to suggest something? [Open an issue](https://github.com/kellypeng/x-reply-helper/issues).
-- Want to chat? [DM me on X](https://x.com/kellyyuweipeng).
+**Why isn't this on the Chrome Web Store?**
+It will be. For now this is the developer-install path. The Web Store has a review process and a one-time fee, which I'll get to once the tool is more polished and used. The code is fully open in the meantime.
 
-Built by [Kelly Peng](https://x.com/kellyyuweipeng) — an indie creator on X. This is one of a few small tools I'm making for X creators who want to engage more without losing their own voice.
+**Will there be a Firefox or Safari version?**
+Maybe later. Chrome (and Chromium browsers like Edge / Brave / Arc) is the only supported browser for now.
+
+## Made by
+
+[Kelly Peng](https://twitter.com/kellyyuweipeng) — independent creator on X.
+
+I built X Reply Helper for myself. English isn't my first language, and I kept having moments on X where I had something to say but couldn't phrase it the way I wanted. The replies I'd come up with felt either too generic or slightly off. Sometimes I'd open ChatGPT in another tab, paste the tweet, ask for ideas — but that broke my flow and the suggestions all sounded the same.
+
+So I built a panel that sits beside the reply box and gives me 5 different takes the moment I focus it. I made it free and open-source for anyone with the same problem.
+
+If X Reply Helper is useful to you, the kindest thing you can do:
+
+- ⭐ **[Star this project on GitHub](https://github.com/kellypeng/x-reply-helper)** — it helps other people find it
+- 🐦 **[Follow me on X (@kellyyuweipeng)](https://twitter.com/kellyyuweipeng)** — I post when I ship new tools and write about indie building
+- 🐛 **[Report a bug](https://github.com/kellypeng/x-reply-helper/issues)** — I read every issue
 
 ---
 
-## For developers
+<details>
+<summary><strong>For developers</strong> — how to run, modify, and contribute</summary>
 
-Plain HTML / JS Chrome MV3 extension. No build step, no dependencies.
+### Develop locally
 
-```sh
+It's a plain Chrome MV3 extension. No build step, no dependencies.
+
+```bash
 git clone https://github.com/kellypeng/x-reply-helper.git
 cd x-reply-helper
-# edit any of: manifest.json, background.js, content.js, content.css, popup.html, popup.js
-# then:
-# 1. open chrome://extensions and reload the extension
-# 2. press Cmd+R (or Ctrl+R) on the X.com tab — content scripts don't auto-reinject
 ```
 
-License: [MIT](LICENSE) © Kelly Peng
+Edit any of `manifest.json` / `background.js` / `content.js` / `content.css` / `popup.html` / `popup.js`. Then:
+
+1. Open `chrome://extensions` and reload the extension.
+2. Press `Cmd+R` (or `Ctrl+R`) on the X.com tab — content scripts don't auto-reinject after a reload.
+
+### Project layout
+
+- `manifest.json` — Chrome MV3 manifest
+- `background.js` — service worker; LLM calls, language detection, prompt building, voice calibration via `chrome.storage.local.pickHistory`
+- `content.js` — injected into x.com / twitter.com; renders the floating panel beside the reply box
+- `content.css` — panel styles, light + dark mode
+- `popup.html` / `popup.js` — settings popup (provider, API key, model override)
+- `icons/` — 16 / 48 / 128 PNGs + source SVG
+- `docs/` — landing page deployed to `x-reply-helper.kellypeng.com` via GitHub Pages
+
+### LLM provider abstraction
+
+`PROVIDERS` in `background.js` lists 4 supported providers (Anthropic, OpenAI, Kimi/Moonshot, Zhipu GLM). Each provider has `type: "anthropic"` (uses `callAnthropic`) or `type: "openai"` (uses `callOpenAICompat`). Adding a new OpenAI-compatible provider is a one-line addition.
+
+### License
+
+[MIT](LICENSE) © Kelly Peng.
+
+</details>
