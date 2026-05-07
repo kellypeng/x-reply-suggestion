@@ -149,11 +149,9 @@
     }
   }
 
-  // Lock to absorb any duplicate insertion attempts within a short window.
-  // Covers all possible double-fire sources: rapid double-clicks, our handler
-  // firing twice for any reason, or Lexical/browser internally triggering two
-  // insertions from a single execCommand. Whatever happens, a click only
-  // produces ONE actual insert.
+  // Lock for paranoid safety against rapid double-clicks and any other
+  // re-entry. The real fix for the double-paste bug is the dispatch
+  // strategy below, not this lock.
   let inserting = false;
 
   function insertIntoComposer(text) {
@@ -163,14 +161,53 @@
       return;
     }
     inserting = true;
+
     try {
       activeComposer.focus();
-      document.execCommand("insertText", false, text);
+
+      // X's reply box uses Lexical (Facebook's React-controlled editor).
+      // Calling document.execCommand("insertText") on Lexical produces a
+      // double insertion: the browser's native insert AND Lexical's React
+      // pipeline both fire from a single call, leaving the cursor between
+      // two copies of the same text.
+      //
+      // Dispatching a synthetic ClipboardEvent("paste") with text in
+      // clipboardData routes through Lexical's paste handler exclusively
+      // (Lexical preventDefaults the paste event after consuming it),
+      // resulting in exactly one insertion.
+      const dt = new DataTransfer();
+      dt.setData("text/plain", text);
+      activeComposer.dispatchEvent(
+        new ClipboardEvent("paste", {
+          bubbles: true,
+          cancelable: true,
+          clipboardData: dt,
+        }),
+      );
+
+      // Sanity check: if the synthetic paste was filtered by Lexical (some
+      // versions check event.isTrusted), the composer text won't have
+      // changed. In that case fall back to execCommand. The fallback may
+      // still double-paste on Lexical, but that's strictly better than no
+      // insertion at all — the user can manually delete the duplicate and
+      // we know to investigate further.
+      const beforeLen = (activeComposer.textContent || "").length;
+      setTimeout(() => {
+        const afterLen = (activeComposer?.textContent || "").length;
+        if (afterLen === beforeLen) {
+          console.warn("[TRH] synthetic paste appears to have been ignored, falling back to execCommand");
+          try {
+            document.execCommand("insertText", false, text);
+          } catch (e) {
+            console.warn("[TRH] execCommand fallback failed:", e);
+          }
+        }
+        inserting = false;
+      }, 50);
     } catch (e) {
-      console.warn("[TRH] insertText failed:", e);
+      console.warn("[TRH] insertIntoComposer failed:", e);
+      inserting = false;
     }
-    // Hold the lock long enough for any echoing fire to be absorbed.
-    setTimeout(() => { inserting = false; }, 300);
   }
 
   function escapeHtml(s) {
