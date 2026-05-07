@@ -152,10 +152,35 @@
   function insertIntoComposer(text) {
     if (!activeComposer || !text) return;
     activeComposer.focus();
+
+    // X's reply box uses Lexical (Facebook's editor framework). Using
+    // document.execCommand("insertText") on a Lexical editor sometimes
+    // produces a double insertion — the browser fires beforeinput which
+    // Lexical handles via its React-controlled state, and then the
+    // browser ALSO performs the native DOM insertion if Lexical didn't
+    // preventDefault. Dispatching a synthetic InputEvent of type
+    // "insertFromPaste" lets Lexical handle it exactly once via its
+    // paste pipeline, with no double-insertion race.
     try {
-      document.execCommand("insertText", false, text);
+      const data = new DataTransfer();
+      data.setData("text/plain", text);
+      activeComposer.dispatchEvent(
+        new InputEvent("beforeinput", {
+          inputType: "insertFromPaste",
+          dataTransfer: data,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
     } catch (e) {
-      console.warn("insertText failed", e);
+      console.warn("[TRH] insertIntoComposer failed:", e);
+      // Last-resort fallback for very old browsers that don't support
+      // the InputEvent constructor.
+      try {
+        document.execCommand("insertText", false, text);
+      } catch (e2) {
+        console.warn("[TRH] execCommand fallback also failed:", e2);
+      }
     }
   }
 
