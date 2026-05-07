@@ -149,39 +149,28 @@
     }
   }
 
+  // Lock to absorb any duplicate insertion attempts within a short window.
+  // Covers all possible double-fire sources: rapid double-clicks, our handler
+  // firing twice for any reason, or Lexical/browser internally triggering two
+  // insertions from a single execCommand. Whatever happens, a click only
+  // produces ONE actual insert.
+  let inserting = false;
+
   function insertIntoComposer(text) {
     if (!activeComposer || !text) return;
-    activeComposer.focus();
-
-    // X's reply box uses Lexical (Facebook's editor framework). Using
-    // document.execCommand("insertText") on a Lexical editor sometimes
-    // produces a double insertion — the browser fires beforeinput which
-    // Lexical handles via its React-controlled state, and then the
-    // browser ALSO performs the native DOM insertion if Lexical didn't
-    // preventDefault. Dispatching a synthetic InputEvent of type
-    // "insertFromPaste" lets Lexical handle it exactly once via its
-    // paste pipeline, with no double-insertion race.
-    try {
-      const data = new DataTransfer();
-      data.setData("text/plain", text);
-      activeComposer.dispatchEvent(
-        new InputEvent("beforeinput", {
-          inputType: "insertFromPaste",
-          dataTransfer: data,
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    } catch (e) {
-      console.warn("[TRH] insertIntoComposer failed:", e);
-      // Last-resort fallback for very old browsers that don't support
-      // the InputEvent constructor.
-      try {
-        document.execCommand("insertText", false, text);
-      } catch (e2) {
-        console.warn("[TRH] execCommand fallback also failed:", e2);
-      }
+    if (inserting) {
+      console.warn("[TRH] insertIntoComposer reentered, suppressing duplicate");
+      return;
     }
+    inserting = true;
+    try {
+      activeComposer.focus();
+      document.execCommand("insertText", false, text);
+    } catch (e) {
+      console.warn("[TRH] insertText failed:", e);
+    }
+    // Hold the lock long enough for any echoing fire to be absorbed.
+    setTimeout(() => { inserting = false; }, 300);
   }
 
   function escapeHtml(s) {
