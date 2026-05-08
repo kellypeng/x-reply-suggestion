@@ -122,6 +122,14 @@
   white-space: pre-wrap;
 }
 
+.trh-compose-hint {
+  padding: 20px 12px;
+  text-align: center;
+  color: #8b98a5;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .trh-loading,
 .trh-error {
   padding: 16px;

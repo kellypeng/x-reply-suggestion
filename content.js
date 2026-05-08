@@ -2,6 +2,7 @@
   let panel = null;
   let activeComposer = null;
   let lastTweetText = "";
+  let currentMode = "reply"; // "reply" | "compose"
 
   function findTweetTextFor(composer) {
     const tweets = document.querySelectorAll('[data-testid="tweetText"]');
@@ -49,14 +50,22 @@
     document.body.appendChild(panel);
     panel.querySelector(".trh-btn-close").addEventListener("click", hidePanel);
     panel.querySelector(".trh-btn-regen").addEventListener("click", () => {
-      if (activeComposer && lastTweetText) requestReplies(lastTweetText, getIntent());
+      if (currentMode === "compose") {
+        const topic = getIntent();
+        if (topic) requestTweetIdeas(topic);
+      } else {
+        if (activeComposer && lastTweetText) requestReplies(lastTweetText, getIntent());
+      }
     });
     const intentEl = panel.querySelector(".trh-intent-input");
     intentEl.addEventListener("keydown", (e) => {
       // Enter submits, Shift+Enter inserts newline
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        if (activeComposer && lastTweetText) {
+        if (currentMode === "compose") {
+          const topic = intentEl.value.trim();
+          if (topic) requestTweetIdeas(topic);
+        } else if (activeComposer && lastTweetText) {
           requestReplies(lastTweetText, intentEl.value.trim());
         }
       }
@@ -99,8 +108,22 @@
     panel.querySelector(".trh-body").innerHTML = html;
   }
 
-  function renderLoading() {
-    setBody(`<div class="trh-loading">Generating replies…</div>`);
+  function updatePanelMode(mode) {
+    currentMode = mode;
+    if (!panel) return;
+    const titleEl = panel.querySelector(".trh-title");
+    const intentEl = panel.querySelector(".trh-intent-input");
+    if (mode === "compose") {
+      if (titleEl) titleEl.textContent = "Tweet ideas";
+      if (intentEl) intentEl.placeholder = "想发什么？Enter 生成推文灵感 / What to tweet? Press Enter";
+    } else {
+      if (titleEl) titleEl.textContent = "Reply ideas";
+      if (intentEl) intentEl.placeholder = "想表达什么？(可选, 中英文都行, 回车提交)";
+    }
+  }
+
+  function renderLoading(msg) {
+    setBody(`<div class="trh-loading">${escapeHtml(msg || (currentMode === "compose" ? "Generating tweet ideas…" : "Generating replies…"))}</div>`);
   }
 
   function renderError(msg) {
@@ -229,6 +252,37 @@
     );
   }
 
+  function requestTweetIdeas(topic) {
+    showPanel();
+    renderLoading();
+    if (!chrome?.runtime?.id) {
+      renderError("Extension was reloaded. Please refresh this page (Cmd+R).");
+      return;
+    }
+    try {
+      chrome.runtime.sendMessage(
+        { type: "generateTweetIdeas", userTopic: topic },
+        (resp) => {
+          if (chrome.runtime.lastError) {
+            renderError(chrome.runtime.lastError.message);
+            return;
+          }
+          if (!resp?.ok) {
+            renderError(resp?.error || "Unknown error");
+            return;
+          }
+          renderReplies(resp.replies);
+        },
+      );
+    } catch (e) {
+      if (isExtensionContextLost(e)) {
+        renderError("Extension was reloaded. Please refresh this page (Cmd+R).");
+      } else {
+        renderError(e?.message || String(e));
+      }
+    }
+  }
+
   function requestReplies(tweetText, userIntent = "") {
     showPanel();
     renderLoading();
@@ -267,14 +321,17 @@
       if (composer === activeComposer) return;
 
       activeComposer = composer;
-      // New tweet → fresh intent. (Don't carry the previous tweet's angle over.)
+      // New composer → fresh intent. (Don't carry the previous tweet's angle over.)
       clearIntent();
       const tweetText = findTweetTextFor(composer);
       if (!tweetText) {
+        // No parent tweet found — this is a new tweet composer, not a reply.
+        updatePanelMode("compose");
         showPanel();
-        renderError("Couldn't find the tweet text. Try clicking on the tweet first.");
+        setBody(`<div class="trh-compose-hint">输入想发的主题，按回车生成推文灵感<br><br>Enter your topic above, press Enter to generate tweet ideas</div>`);
         return;
       }
+      updatePanelMode("reply");
       lastTweetText = tweetText;
       requestReplies(tweetText);
     } catch (err) {
