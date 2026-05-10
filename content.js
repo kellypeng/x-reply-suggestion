@@ -132,6 +132,7 @@
   }
 
   function renderReplies(replies) {
+    const renderedAt = Date.now();
     const cards = replies
       .map(
         (r, i) => `
@@ -144,6 +145,9 @@
     setBody(cards);
     panel.querySelectorAll(".trh-card").forEach((el) => {
       el.addEventListener("click", () => {
+        // Ignore clicks that land within 400ms of cards appearing —
+        // prevents accidentally selecting a card that rendered under the cursor.
+        if (Date.now() - renderedAt < 400) return;
         const idx = Number(el.dataset.idx);
         const reply = replies[idx];
         if (!reply) return;
