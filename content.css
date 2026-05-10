@@ -92,6 +92,7 @@
 
 .trh-body {
   padding: 8px;
+  min-height: 260px;
 }
 
 .trh-card {
@@ -100,11 +101,20 @@
   padding: 10px 12px;
   margin: 6px;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s, border-color 0.15s;
 }
 .trh-card:hover {
   background: #f7f9fa;
   border-color: #1d9bf0;
+}
+.trh-card--entering {
+  opacity: 0;
+  transform: translateY(4px);
+}
+.trh-card--inert {
+  pointer-events: none;
 }
 
 .trh-style {

@@ -59,6 +59,18 @@
       }
     });
     const intentEl = panel.querySelector(".trh-intent-input");
+    // Defend against Twitter's Lexical editor stealing focus back when the
+    // user clicks our intent textarea. Reclaim focus a few times over 300ms.
+    intentEl.addEventListener("mousedown", () => {
+      const reclaim = (attemptsLeft) => {
+        if (attemptsLeft <= 0) return;
+        if (document.activeElement !== intentEl) {
+          intentEl.focus({ preventScroll: true });
+        }
+        setTimeout(() => reclaim(attemptsLeft - 1), 100);
+      };
+      setTimeout(() => reclaim(3), 50);
+    });
     intentEl.addEventListener("keydown", (e) => {
       // Enter submits, Shift+Enter inserts newline
       if (e.key === "Enter" && !e.shiftKey) {
@@ -132,22 +144,28 @@
   }
 
   function renderReplies(replies) {
-    const renderedAt = Date.now();
     const cards = replies
       .map(
         (r, i) => `
-      <div class="trh-card" data-idx="${i}">
+      <div class="trh-card trh-card--entering trh-card--inert" data-idx="${i}">
         <div class="trh-style">${escapeHtml(r.style || "Reply")}</div>
         <div class="trh-text">${escapeHtml(r.text || "")}</div>
       </div>`,
       )
       .join("");
     setBody(cards);
-    panel.querySelectorAll(".trh-card").forEach((el) => {
+    const cardEls = panel.querySelectorAll(".trh-card");
+    // Trigger fade-in on next frame so the transition plays from the entering state.
+    requestAnimationFrame(() => {
+      cardEls.forEach((el) => el.classList.remove("trh-card--entering"));
+    });
+    // Keep cards physically non-clickable for 500ms (covers fade-in + buffer)
+    // so a click that started mid-render can't accidentally land on a card.
+    setTimeout(() => {
+      cardEls.forEach((el) => el.classList.remove("trh-card--inert"));
+    }, 500);
+    cardEls.forEach((el) => {
       el.addEventListener("click", () => {
-        // Ignore clicks that land within 400ms of cards appearing —
-        // prevents accidentally selecting a card that rendered under the cursor.
-        if (Date.now() - renderedAt < 400) return;
         const idx = Number(el.dataset.idx);
         const reply = replies[idx];
         if (!reply) return;
