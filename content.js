@@ -3,6 +3,7 @@
   let activeComposer = null;
   let lastTweetText = "";
   let currentMode = "reply"; // "reply" | "compose"
+  let lastPanelMousedown = 0; // timestamp of last mousedown inside panel
 
   function findTweetTextFor(composer) {
     const tweets = document.querySelectorAll('[data-testid="tweetText"]');
@@ -340,6 +341,10 @@
   });
 
   document.addEventListener("mousedown", (e) => {
+    if (panel?.contains(e.target)) {
+      lastPanelMousedown = Date.now();
+      return;
+    }
     if (!isPanelVisible()) return;
     if (shouldKeepPanelVisible(e.target)) return;
     hidePanel();
@@ -349,6 +354,9 @@
     if (!isPanelVisible()) return;
     setTimeout(() => {
       if (!isPanelVisible()) return;
+      // If the user recently clicked inside the panel, don't hide —
+      // even if Twitter stole focus away (e.g. closing a compose modal).
+      if (Date.now() - lastPanelMousedown < 500) return;
       if (shouldKeepPanelVisible(document.activeElement)) return;
       if (activeComposer && !activeComposer.isConnected) {
         hidePanel();
