@@ -6,22 +6,40 @@
   let lastPanelMousedown = 0; // timestamp of last mousedown inside panel
 
   function findTweetTextFor(composer) {
-    const tweets = document.querySelectorAll('[data-testid="tweetText"]');
-    if (tweets.length === 0) return "";
-
+    // If the composer is inside a modal dialog (reply or compose), only look
+    // at candidates inside the SAME dialog — otherwise we'd grab tweets from
+    // the timeline behind the modal and mis-identify a new-tweet modal as a reply.
+    const composerDialog = composer.closest('[role="dialog"]');
     const cRect = composer.getBoundingClientRect();
-    let best = null;
-    let bestDist = Infinity;
-    tweets.forEach((t) => {
-      const tRect = t.getBoundingClientRect();
-      if (tRect.top >= cRect.top) return;
-      const dist = cRect.top - tRect.bottom;
-      if (dist >= 0 && dist < bestDist) {
-        bestDist = dist;
-        best = t;
-      }
-    });
-    return (best?.innerText || "").trim();
+
+    const findClosestAbove = (selector) => {
+      const els = document.querySelectorAll(selector);
+      let best = null;
+      let bestDist = Infinity;
+      els.forEach((t) => {
+        if (composerDialog && !composerDialog.contains(t)) return;
+        const tRect = t.getBoundingClientRect();
+        if (tRect.top >= cRect.top) return;
+        const dist = cRect.top - tRect.bottom;
+        if (dist >= 0 && dist < bestDist) {
+          bestDist = dist;
+          best = t;
+        }
+      });
+      return best;
+    };
+
+    // Prefer plain tweet text. Fall back to the whole tweet article so we
+    // also catch X Articles, media-only tweets, polls, etc.
+    const text = findClosestAbove('[data-testid="tweetText"]');
+    if (text) return (text.innerText || "").trim();
+
+    const article = findClosestAbove(
+      'article[data-testid="tweet"], article[role="article"]',
+    );
+    if (article) return (article.innerText || "").trim().slice(0, 800);
+
+    return "";
   }
 
   function ensurePanel() {
