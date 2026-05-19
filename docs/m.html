@@ -270,6 +270,61 @@
       font-weight: 600;
       cursor: pointer;
     }
+    .step {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+    }
+    .step:first-child { border-top: 0; padding-top: 4px; }
+    .step .num {
+      flex: 0 0 28px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+    .step .body { flex: 1; min-width: 0; font-size: 14.5px; line-height: 1.5; }
+    .step .body strong { font-weight: 700; }
+    .step .body em { font-style: normal; color: var(--muted); }
+    .step .screen {
+      margin-top: 8px;
+      padding: 8px 10px;
+      background: var(--bg);
+      border: 1px dashed var(--border-strong);
+      border-radius: 8px;
+      font-size: 12.5px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .step .screen b { color: var(--text); }
+    .kbd {
+      display: inline-block;
+      background: var(--bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 5px;
+      padding: 1px 6px;
+      font-size: 12.5px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      color: var(--text);
+    }
+    .pill {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 999px;
+      padding: 1px 8px;
+      font-size: 12px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -293,22 +348,104 @@
       </div>
 
       <div class="panel">
-        <strong>2. Build the iOS Shortcut (3 actions)</strong>
-        <p style="margin: 8px 0 0;">Open the <strong>Shortcuts</strong> app on your iPhone, tap <strong>+</strong>, then:</p>
-        <ol>
-          <li>Tap the settings icon (top-right). Set <em>Name</em> to "X Reply", turn on <em>Show in Share Sheet</em>, set <em>Share Sheet Types</em> to <strong>URLs only</strong>.</li>
-          <li>Search for and add <strong>URL Encode</strong>. The input is the Shortcut Input (URL passed from share sheet).</li>
-          <li>Add <strong>Text</strong>. Tap into it and type:
-            <div class="url-row">
-              <span class="code" id="shortcut-prefix">https://x-reply-helper.kellypeng.com/m.html?url=</span>
-              <button class="copy-url-btn" id="copy-prefix">Copy</button>
-            </div>
-            Then tap the magic variable bar above the keyboard and insert the <em>URL Encoded</em> variable at the end so it reads:<br>
-            <code>https://...m.html?url=[URL Encoded]</code>
-          </li>
-          <li>Add <strong>Open URLs</strong>. Set the URL field to the magic variable for the Text from step 3.</li>
-          <li>Done. Tap the back arrow to save.</li>
-        </ol>
+        <strong>2. 在 iPhone 上搭一个 Shortcut</strong>
+        <p style="margin: 8px 0 4px; font-size: 13.5px; color: var(--muted);">下面每一步都是一个动作。看到"屏幕上应该是…"就是 sanity check，跟你看到的对一下。</p>
+
+        <div class="url-row">
+          <span class="code" id="shortcut-prefix">https://x-reply-helper.kellypeng.com/m.html?url=</span>
+          <button class="copy-url-btn" id="copy-prefix">Copy</button>
+        </div>
+        <p style="margin: 4px 0 0; font-size: 12px; color: var(--muted);">↑ 第 7 步会用到这个 URL，可以先点 Copy。</p>
+
+        <div class="step">
+          <div class="num">1</div>
+          <div class="body">
+            打开 iPhone 上的 <strong>Shortcuts（捷径）</strong> app。<br>
+            <em>就是默认那个彩色方块图标，找不到的话下拉搜索 "Shortcuts" / "捷径"。</em>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">2</div>
+          <div class="body">
+            右上角点 <span class="kbd">＋</span> 新建一个 Shortcut。
+            <div class="screen">屏幕上应该是：一个空的编辑器，顶部写着 <b>New Shortcut</b>（新捷径），中间有个 <b>Add Action</b> / <b>添加操作</b> 按钮。</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">3</div>
+          <div class="body">
+            点 <strong>Add Action</strong>（添加操作）。<br>
+            在搜索框里输入：<span class="kbd">URL Encode</span><br>
+            点列表里出现的 <strong>URL Encode</strong>。
+            <div class="screen">第一个动作加好了：<b>URL Encode [Shortcut Input]</b>（URL 编码 [快捷指令输入]）。Shortcut Input 是从分享菜单传过来的推文链接，已经自动填好。</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">4</div>
+          <div class="body">
+            点编辑器底部的搜索栏（写着 <em>Search for apps and actions</em>）。<br>
+            搜索：<span class="kbd">Text</span><br>
+            点列表里出现的 <strong>Text</strong>（文本）动作。
+            <div class="screen">第二个动作加好了：一个空的 <b>Text</b> 输入框出现在第一个动作下面。</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">5</div>
+          <div class="body">
+            点这个 Text 框，让光标进去。<br>
+            <strong>长按</strong> → <strong>Paste（粘贴）</strong>，把刚才 Copy 的那条 URL 粘进去。
+            <div class="screen">现在框里是：<b>https://x-reply-helper.kellypeng.com/m.html?url=</b></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">6</div>
+          <div class="body">
+            <strong>不要动光标位置</strong>（光标应该在最后那个 <code>=</code> 之后）。<br>
+            键盘正上方有一条灰色变量条，往左滑找到蓝色的 <span class="pill">URL Encoded</span> 胶囊，点它。
+            <div class="screen">现在 Text 框是：<br><b>https://x-reply-helper.kellypeng.com/m.html?url=<span class="pill" style="font-size:11px;">URL Encoded</span></b><br><em style="font-size:12px;">注意结尾那个蓝色胶囊"URL Encoded"——这就是把推文链接接到 URL 后面的关键。</em></div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">7</div>
+          <div class="body">
+            再点底部搜索栏，搜索：<span class="kbd">Open URLs</span><br>
+            点列表里出现的 <strong>Open URLs</strong>（打开 URL）。
+            <div class="screen">第三个动作加好了：<b>Open URLs [Text]</b>（打开 URL [文本]）。它会自动用上一步的 Text 结果，不用手动配。</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">8</div>
+          <div class="body">
+            顶部点 Shortcut 名字那一行（默认是 "New Shortcut"），改成 <strong>X Reply</strong>。
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">9</div>
+          <div class="body">
+            顶部右上角有个像两条滑杆的图标 <span class="kbd">≡⃝</span>，点它打开设置。<br>
+            <ul style="margin: 6px 0 0; padding-left: 20px;">
+              <li>打开 <strong>Show in Share Sheet</strong>（在分享菜单中显示）的开关。</li>
+              <li>下面 <strong>Share Sheet Types</strong>（分享菜单类型）一项，<strong>只勾 URLs</strong>，其他全取消。</li>
+            </ul>
+            <div class="screen">勾完点上方 <b>Done</b>（完成）回到编辑器。</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">10</div>
+          <div class="body">
+            右上角点 <strong>Done</strong>（完成）保存 Shortcut。
+            <div class="screen">现在你回到了 Shortcuts 主屏幕，列表里多了一个 <b>X Reply</b>。搭完了！</div>
+          </div>
+        </div>
       </div>
 
       <div class="panel">
