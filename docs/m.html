@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1d9bf0" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#15202b" media="(prefers-color-scheme: dark)" />
+  <title>X Reply Ideas — mobile</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f7f9fa;
+      --text: #0f1419;
+      --muted: #536471;
+      --border: #eef3f4;
+      --border-strong: #cfd9de;
+      --accent: #1d9bf0;
+      --accent-deep: #1a8cd8;
+      --error: #c62828;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #15202b;
+        --bg-soft: #1c2732;
+        --text: #e7e9ea;
+        --muted: #8b98a5;
+        --border: #38444d;
+        --border-strong: #38444d;
+      }
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", sans-serif;
+      font-size: 16px;
+      line-height: 1.45;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 10;
+    }
+    h1 { font-size: 17px; font-weight: 700; margin: 0; }
+    .icon-btn {
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      font-size: 22px;
+      padding: 6px 10px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .icon-btn:active { color: var(--text); }
+    .actions { display: flex; gap: 4px; align-items: center; }
+
+    main { padding: 14px 16px 80px; max-width: 600px; margin: 0 auto; }
+
+    .tweet-preview {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      font-size: 14.5px;
+      color: var(--text);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 140px;
+      overflow-y: auto;
+    }
+    .tweet-preview .label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .intent {
+      width: 100%;
+      border: 1px solid var(--border-strong);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 16px;
+      font-family: inherit;
+      line-height: 1.4;
+      resize: none;
+      outline: none;
+      margin-bottom: 12px;
+    }
+    .intent:focus { border-color: var(--accent); }
+
+    .gen-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 999px;
+      padding: 13px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-bottom: 14px;
+    }
+    .gen-btn:active { background: var(--accent-deep); }
+    .gen-btn:disabled { opacity: 0.55; }
+
+    .cards { display: flex; flex-direction: column; gap: 10px; }
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      background: var(--bg);
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, transform 0.1s;
+    }
+    .card:active { transform: scale(0.98); background: var(--bg-soft); border-color: var(--accent); }
+    .card .style {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .card .text { font-size: 15.5px; color: var(--text); line-height: 1.45; white-space: pre-wrap; }
+
+    .status { text-align: center; color: var(--muted); padding: 28px 12px; font-size: 14px; }
+    .status.error { color: var(--error); white-space: pre-wrap; text-align: left; padding: 16px; }
+
+    .toast {
+      position: fixed;
+      bottom: calc(env(safe-area-inset-bottom) + 24px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 100;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Settings dialog */
+    dialog.settings {
+      border: 0;
+      border-radius: 16px;
+      padding: 0;
+      max-width: 92vw;
+      width: 360px;
+      background: var(--bg);
+      color: var(--text);
+    }
+    dialog.settings::backdrop { background: rgba(0, 0, 0, 0.5); }
+    .settings-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .settings-head h2 { font-size: 16px; font-weight: 700; margin: 0; }
+    .settings-body { padding: 14px 16px 16px; }
+    .settings-body label {
+      display: block;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 10px 0 6px;
+      font-weight: 600;
+    }
+    .settings-body input, .settings-body select {
+      width: 100%;
+      border: 1px solid var(--border-strong);
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+    }
+    .settings-body input:focus { border-color: var(--accent); }
+    .settings-body .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .settings-body .hint a { color: var(--accent); text-decoration: none; }
+    .save-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 20px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .credit {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 24px;
+    }
+    .credit a { color: var(--accent); text-decoration: none; }
+
+    /* Setup / first-run guide (shown when no ?url=) */
+    .setup { display: none; }
+    .setup.show { display: block; }
+    .setup h2 { font-size: 18px; font-weight: 700; margin: 6px 0 12px; }
+    .setup p { color: var(--text); margin: 0 0 14px; font-size: 14.5px; }
+    .setup ol { padding-left: 22px; margin: 0 0 18px; }
+    .setup li { margin: 8px 0; font-size: 14.5px; line-height: 1.55; }
+    .setup .panel {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+    .setup code, .setup .code {
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-size: 12.5px;
+      word-break: break-all;
+    }
+    .setup .url-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin: 10px 0 4px;
+    }
+    .setup .url-row .code {
+      flex: 1;
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    .setup .copy-url-btn {
+      flex: 0 0 auto;
+      background: var(--accent);
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Reply ideas</h1>
+    <div class="actions">
+      <button class="icon-btn" id="regen-btn" aria-label="Regenerate" title="Regenerate">↻</button>
+      <button class="icon-btn" id="settings-btn" aria-label="Settings" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- First-run setup guide, shown when no ?url= param -->
+    <div id="setup" class="setup">
+      <h2>One-time setup (5 min)</h2>
+      <p>This page generates reply ideas for a tweet you share to it. Set up once, then it lives in your X share sheet.</p>
+
+      <div class="panel">
+        <strong>1. Add your Anthropic API key</strong>
+        <p style="margin: 8px 0 0; font-size: 13.5px;">Tap <button class="icon-btn" id="open-settings-inline" style="display:inline; padding:0 4px; font-size:18px;">⚙</button> top-right, paste your key, Save. Get one at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.</p>
+      </div>
+
+      <div class="panel">
+        <strong>2. Build the iOS Shortcut (3 actions)</strong>
+        <p style="margin: 8px 0 0;">Open the <strong>Shortcuts</strong> app on your iPhone, tap <strong>+</strong>, then:</p>
+        <ol>
+          <li>Tap the settings icon (top-right). Set <em>Name</em> to "X Reply", turn on <em>Show in Share Sheet</em>, set <em>Share Sheet Types</em> to <strong>URLs only</strong>.</li>
+          <li>Search for and add <strong>URL Encode</strong>. The input is the Shortcut Input (URL passed from share sheet).</li>
+          <li>Add <strong>Text</strong>. Tap into it and type:
+            <div class="url-row">
+              <span class="code" id="shortcut-prefix">https://x-reply-helper.kellypeng.com/m.html?url=</span>
+              <button class="copy-url-btn" id="copy-prefix">Copy</button>
+            </div>
+            Then tap the magic variable bar above the keyboard and insert the <em>URL Encoded</em> variable at the end so it reads:<br>
+            <code>https://...m.html?url=[URL Encoded]</code>
+          </li>
+          <li>Add <strong>Open URLs</strong>. Set the URL field to the magic variable for the Text from step 3.</li>
+          <li>Done. Tap the back arrow to save.</li>
+        </ol>
+      </div>
+
+      <div class="panel">
+        <strong>3. Try it</strong>
+        <ol>
+          <li>Open the X app. Find any tweet you want to reply to.</li>
+          <li>Tap the share icon → tap <strong>X Reply</strong> in the share sheet.</li>
+          <li>Safari opens this page with the tweet pre-loaded. Tap a reply card → it copies to clipboard. Switch back to X, paste in the reply box.</li>
+        </ol>
+        <p style="margin: 10px 0 0; font-size: 13px; color: var(--muted);">Optional: type an angle in the box above the cards and tap Generate to rewrite the reply in your specific direction.</p>
+      </div>
+    </div>
+
+    <div id="tweet-box" class="tweet-preview" hidden>
+      <span class="label" data-i18n="replyingTo">Replying to</span>
+      <span id="tweet-text"></span>
+    </div>
+
+    <textarea class="intent" id="intent" rows="2" placeholder="想表达什么? 中英文都行 (可选)"></textarea>
+
+    <button class="gen-btn" id="gen-btn">Generate replies</button>
+
+    <div id="status" class="status" hidden></div>
+    <div class="cards" id="cards"></div>
+
+    <div class="credit">
+      Made by <a href="https://x.com/kellyyuweipeng" target="_blank" rel="noopener">@kellyyuweipeng</a>
+      · <a href="/" >x-reply-helper</a>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">Copied</div>
+
+  <dialog class="settings" id="settings-modal">
+    <div class="settings-head">
+      <h2>Settings</h2>
+      <button class="icon-btn" id="close-settings" aria-label="Close">×</button>
+    </div>
+    <div class="settings-body">
+      <label for="api-key">Anthropic API key</label>
+      <input id="api-key" type="password" autocomplete="off" placeholder="sk-ant-..." />
+      <div class="hint">
+        Stored only in this browser. Get one at
+        <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">console.anthropic.com</a>.
+      </div>
+
+      <label for="model-select">Model</label>
+      <select id="model-select">
+        <option value="claude-haiku-4-5">claude-haiku-4-5 (fast, cheap)</option>
+        <option value="claude-sonnet-4-5">claude-sonnet-4-5 (best)</option>
+      </select>
+
+      <button class="save-btn" id="save-settings">Save</button>
+    </div>
+  </dialog>
+
+  <script>
+    const STORAGE = {
+      apiKey:  "trh_m_apiKey",
+      model:   "trh_m_model",
+    };
+    const PROMPT_BASE = "/prompts";
+
+    const els = {
+      tweetBox:    document.getElementById("tweet-box"),
+      tweetText:   document.getElementById("tweet-text"),
+      intent:      document.getElementById("intent"),
+      genBtn:      document.getElementById("gen-btn"),
+      status:      document.getElementById("status"),
+      cards:       document.getElementById("cards"),
+      toast:       document.getElementById("toast"),
+      regenBtn:    document.getElementById("regen-btn"),
+      settingsBtn: document.getElementById("settings-btn"),
+      settings:    document.getElementById("settings-modal"),
+      closeSet:    document.getElementById("close-settings"),
+      apiKey:      document.getElementById("api-key"),
+      modelSel:    document.getElementById("model-select"),
+      saveBtn:     document.getElementById("save-settings"),
+      setup:       document.getElementById("setup"),
+      openSetIn:   document.getElementById("open-settings-inline"),
+      copyPrefix:  document.getElementById("copy-prefix"),
+      prefixCode:  document.getElementById("shortcut-prefix"),
+    };
+
+    // Auto-fill the prefix code with the current origin so users on staging /
+    // local dev see the correct URL.
+    if (els.prefixCode) {
+      els.prefixCode.textContent = `${location.origin}/m.html?url=`;
+    }
+
+    let lastTweetText = "";
+
+    // ───────────────────────── language / prompts ─────────────────────────
+    function detectLanguage(text) {
+      const han = (text.match(/\p{Script=Han}/gu) || []).length;
+      const latin = (text.match(/\p{Script=Latin}/gu) || []).length;
+      if (han === 0) return "en";
+      if (latin === 0) return "zh";
+      return han * 3 > latin ? "zh" : "en";
+    }
+
+    const promptCache = {};
+    async function loadPrompt(name) {
+      if (promptCache[name]) return promptCache[name];
+      const res = await fetch(`${PROMPT_BASE}/${name}.txt`);
+      if (!res.ok) throw new Error(`Failed to load prompt ${name}: ${res.status}`);
+      const text = await res.text();
+      promptCache[name] = text;
+      return text;
+    }
+
+    // ───────────────────────── settings ─────────────────────────
+    function loadSettings() {
+      els.apiKey.value  = localStorage.getItem(STORAGE.apiKey)  || "";
+      els.modelSel.value = localStorage.getItem(STORAGE.model)  || "claude-haiku-4-5";
+    }
+    function saveSettings() {
+      localStorage.setItem(STORAGE.apiKey, els.apiKey.value.trim());
+      localStorage.setItem(STORAGE.model,  els.modelSel.value);
+      els.settings.close();
+      toast("Saved");
+    }
+    function hasApiKey() { return !!localStorage.getItem(STORAGE.apiKey); }
+
+    els.settingsBtn.addEventListener("click", () => { loadSettings(); els.settings.showModal(); });
+    els.closeSet.addEventListener("click", () => els.settings.close());
+    els.saveBtn.addEventListener("click", saveSettings);
+    if (els.openSetIn) {
+      els.openSetIn.addEventListener("click", () => { loadSettings(); els.settings.showModal(); });
+    }
+    if (els.copyPrefix) {
+      els.copyPrefix.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(els.prefixCode.textContent);
+          toast("Copied");
+        } catch (e) {
+          toast("Long-press the URL to copy");
+        }
+      });
+    }
+
+    // ───────────────────────── tweet fetching ─────────────────────────
+    async function fetchTweetText(url) {
+      const oembedUrl = `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}&dnt=true&omit_script=true`;
+      const res = await fetch(oembedUrl);
+      if (!res.ok) throw new Error(`oEmbed ${res.status}`);
+      const data = await res.json();
+      const html = data.html || "";
+      // Pull text between first <p>...</p>
+      const m = html.match(/<p[^>]*>([\s\S]*?)<\/p>/);
+      let text = m ? m[1] : html;
+      // Strip inner tags
+      text = text.replace(/<[^>]+>/g, "");
+      // Decode common entities
+      text = text
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&mdash;/g, "—")
+        .replace(/&nbsp;/g, " ");
+      return text.trim();
+    }
+
+    // ───────────────────────── API call ─────────────────────────
+    async function callAnthropic(system, userMsg) {
+      const apiKey = localStorage.getItem(STORAGE.apiKey);
+      const model  = localStorage.getItem(STORAGE.model) || "claude-haiku-4-5";
+      if (!apiKey) throw new Error("No API key. Tap ⚙ to add one.");
+
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 500,
+          system,
+          messages: [{ role: "user", content: userMsg }],
+        }),
+      });
+      if (!res.ok) {
+        const t = await res.text();
+        throw new Error(`API ${res.status}: ${t.slice(0, 240)}`);
+      }
+      const data = await res.json();
+      return (data.content || []).find((c) => c.type === "text")?.text || "";
+    }
+
+    // ───────────────────────── generate flow ─────────────────────────
+    async function generate() {
+      if (!lastTweetText) { setError("No tweet text yet. Paste a tweet URL or open via the X share sheet."); return; }
+      const intent = els.intent.value.trim();
+      const isRewrite = !!intent;
+      const lang = detectLanguage(lastTweetText);
+
+      const promptName = `${isRewrite ? "rewrite" : "reply"}-${lang}`;
+      els.genBtn.disabled = true;
+      setStatus("Generating…");
+      els.cards.innerHTML = "";
+
+      try {
+        const system = await loadPrompt(promptName);
+        let userMsg;
+        if (isRewrite) {
+          userMsg = lang === "zh"
+            ? `原帖：\n"""${lastTweetText}"""\n\nKelly 想表达的意思（可能是中文也可能是英文，但回复必须是中文）：\n"""${intent}"""\n\n生成 4 条中文回复，每条用不同变体（短/句/幽默/呼应）表达 Kelly 的同一个核心意思。完全贴合她的角度，不要加新观点。返回 JSON 数组。`
+            : `Tweet:\n"""${lastTweetText}"""\n\nKelly's angle (may be in Chinese or English, but replies must be in English):\n"""${intent}"""\n\nGenerate 4 English replies, each a different variant (Short/Sentence/Playful/Echo) of Kelly's same core idea. Match her angle exactly. Don't add new ideas. Return the JSON array.`;
+        } else {
+          userMsg = lang === "zh"
+            ? `原帖：\n"""${lastTweetText}"""\n\n生成 5 条中文回复，每条对应一种姿势（数据/追问/反转/经验/调侃），按上面 JSON 格式返回。不要破折号、不要装饰括号、不要每条都讲道理。`
+            : `Tweet:\n"""${lastTweetText}"""\n\nGenerate 5 English replies, each using a different pose (Concrete/Question/Counter/Personal/Playful). Don't fabricate fake numbers or experiences. Return the JSON array.`;
+        }
+
+        const raw = await callAnthropic(system, userMsg);
+        const arr = raw.match(/\[[\s\S]*\]/);
+        if (!arr) throw new Error(`Model didn't return JSON. Got: ${raw.slice(0, 120) || "(empty)"}`);
+        const replies = JSON.parse(arr[0]);
+        if (!Array.isArray(replies) || replies.length === 0) throw new Error("Model returned an empty list.");
+
+        clearStatus();
+        renderCards(replies);
+      } catch (err) {
+        setError(err.message || String(err));
+      } finally {
+        els.genBtn.disabled = false;
+      }
+    }
+
+    function renderCards(replies) {
+      els.cards.innerHTML = replies.map((r, i) => `
+        <div class="card" data-idx="${i}">
+          <div class="style">${escapeHtml(r.style || "Reply")}</div>
+          <div class="text">${escapeHtml(r.text || "")}</div>
+        </div>`).join("");
+      els.cards.querySelectorAll(".card").forEach((el) => {
+        el.addEventListener("click", async () => {
+          const idx = Number(el.dataset.idx);
+          const text = replies[idx]?.text || "";
+          if (!text) return;
+          try {
+            await navigator.clipboard.writeText(text);
+            toast("Copied — paste in X");
+          } catch (e) {
+            toast("Copy failed — long-press to select");
+          }
+        });
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    // ───────────────────────── UI helpers ─────────────────────────
+    function setStatus(msg) { els.status.hidden = false; els.status.className = "status"; els.status.textContent = msg; }
+    function setError(msg)  { els.status.hidden = false; els.status.className = "status error"; els.status.textContent = msg; }
+    function clearStatus()  { els.status.hidden = true; els.status.textContent = ""; }
+
+    let toastTimer;
+    function toast(msg) {
+      els.toast.textContent = msg;
+      els.toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => els.toast.classList.remove("show"), 1600);
+    }
+
+    // ───────────────────────── intent submit on Enter ─────────────────────────
+    els.intent.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        generate();
+      }
+    });
+    els.genBtn.addEventListener("click", generate);
+    els.regenBtn.addEventListener("click", generate);
+
+    // ───────────────────────── init ─────────────────────────
+    async function init() {
+      const params = new URLSearchParams(location.search);
+      const tweetUrl = params.get("url");
+
+      if (!tweetUrl) {
+        // First-run / direct visit — show setup guide, hide generation UI.
+        els.setup.classList.add("show");
+        els.intent.hidden = true;
+        els.genBtn.hidden = true;
+        if (!hasApiKey()) {
+          loadSettings();
+          els.settings.showModal();
+        }
+        return;
+      }
+
+      if (!hasApiKey()) {
+        loadSettings();
+        els.settings.showModal();
+      }
+
+      try {
+        setStatus("Loading tweet…");
+        lastTweetText = await fetchTweetText(tweetUrl);
+        if (!lastTweetText) throw new Error("Could not extract tweet text.");
+        els.tweetText.textContent = lastTweetText;
+        els.tweetBox.hidden = false;
+        clearStatus();
+        if (hasApiKey()) generate();
+      } catch (err) {
+        setError(`Couldn't load tweet: ${err.message}\n\nYou can paste the tweet text manually in the angle box below and tap Generate.`);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
